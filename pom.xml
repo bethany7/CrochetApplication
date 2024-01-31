@@ -39,6 +39,12 @@
                     </goals>
                 </execution>
             </executions>
+            <configuration>
+                <arguments>
+                    <argument>-visitor</argument>
+                </arguments>
+            </configuration>
+
         </plugin>
     </plugins>
     </build>
