@@ -1,1 +1,1 @@
-dc in 4th ch from hook, *skip next ch, dc in next ch,** 3dc in next ch,*  repeat from * to * to last 4 ch, repeat from * to ** once, 2 dc in last ch
+dc in 4th ch from hook, *skip next ch, dc in next ch,** 3dc in next ch,*  repeat from * to * to last 4 ch, repeat from * to ** 2 times, 2 dc in last ch

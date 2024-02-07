@@ -1,0 +1,21 @@
+.root {
+  -fx-background-color: #ffffff;
+}
+
+.toolbar {
+  -fx-background-color: #69a8a8;
+  -fx-padding: 15;
+  -fx-spacing: 10;
+}
+
+.settings {
+  -fx-background-color: #ba99cb;
+  -fx-padding: 15;
+  -fx-spacing: 10;
+}
+
+.entry {
+  -fx-background-color: #a8a369;
+  -fx-padding: 15;
+  -fx-spacing: 10;
+}

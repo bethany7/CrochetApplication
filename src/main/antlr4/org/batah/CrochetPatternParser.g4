@@ -3,23 +3,51 @@ grammar CrochetPatternParser;
 //repeat : '*' instruction (',' instruction)* '*' 'repeat' ;
 instructions : instruction (',' instruction)*;
 
-instruction : repeatInstructions | chain | stitches attachment | repeat | skip | FINALTURN;
-repeatInstructions: 'repeat from' REP 'to' REP repeatTimes
-                    | 'repeat from' REP 'to' REP 'to last' stitches;
+instruction : repeatInstructions        //# RepeatInstrs
+              | chain                   //# ChainInstr
+              | stitches attachment     //# StitchInstr
+              | repeat                  //# RepeatMarker
+              | skip                    //# SkipInstr
+              | FINALTURN               //# FinalTurnInstr
+              ;
+
+repeatInstructions: 'repeat from' REP 'to' REP repeatTimes            # TimesRepeat
+                    | 'repeat from' REP 'to' REP 'to last' stitches   # ToLastRepeat
+                    ;
+
 repeat : REP instructions ;
-skip : 'skip' INT | 'skip next' stitches | 'skip' stitches ;
+
+skip : 'skip' INT      # SkipCount
+      | 'skip next' stitches # SkipNext
+      | 'skip' stitches # SkipStitches
+      ;
 
 attachment : inNext | inEach | inFirst | inLast | inChain;
-inNext : 'in next' INT |'in next' stitches ;
+
+inNext : 'in next' INT            # InNextX
+        |'in next' stitches       # InNextSt
+        ;
 inEach : 'in each' stitches ;
 inFirst : 'in first' stitches ;
 inLast : 'in last' stitches ;
-inChain : 'in 1st' CHAINSTITCH 'from hook' | 'in 2nd' CHAINSTITCH 'from hook'
-    | 'in 3rd' CHAINSTITCH 'from hook' | 'in' INT 'th' CHAINSTITCH 'from hook' ;
 
-chain : CHAINSTITCH (INT)* | CHAINSTITCH INT 'up';
+inChain : 'in 1st' CHAINSTITCH 'from hook'        # InChain1
+        | 'in 2nd' CHAINSTITCH 'from hook'        # InChain2
+        | 'in 3rd' CHAINSTITCH 'from hook'        # InChain3
+        | 'in' INT 'th' CHAINSTITCH 'from hook'   # InChainN
+        ;
+
+chain : CHAINSTITCH (INT)*
+      | CHAINSTITCH INT 'up'
+      ;
+
 stitches : ((INT)* stitch)+ ;
-stitch : GENERICSTITCH | STITCHTYPE | CHAINSTITCH | SLIPSTITCH ;
+stitch : GENERICSTITCH
+        | STITCHTYPE
+        | CHAINSTITCH
+        | SLIPSTITCH
+        ;
+
 repeatTimes : INT 'times' | INT 'time' | 'once' ;
 
 REP : '*'+ ;
