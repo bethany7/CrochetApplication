@@ -10,12 +10,12 @@ public class Row {
   ArrayList<Stitch> stitches;
   Pattern pattern;
 
-  Triplet<Integer, Integer, ArrayList<Stitch>> row;
+  //Triplet<Integer, Integer, ArrayList<Stitch>> row;
 
   public Row(Pattern pattern) {
     this.stitches = new ArrayList<>();
     this.rowNum = pattern.pattern.isEmpty() ? 1 : pattern.pattern.size() + 1;
-    this.row = new Triplet<>(rowNum, 0, stitches);
+    //this.row = new Triplet<>(rowNum, 0, stitches);
     this.pattern = pattern;
   }
 
