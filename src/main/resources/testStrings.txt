@@ -1,1 +1,15 @@
 dc in 4th ch from hook, *skip next ch, dc in next ch,** 3dc in next ch,*  repeat from * to * to last 4 ch, repeat from * to ** 2 times, 2 dc in last ch
+
+ch 10
+
+ch 10, turn
+
+10dc
+
+10 dc in next 10 tr
+
+dc in 4th ch from hook
+
+10dc, *tr in dc, dc in next ch* repeat from * to * 3 times
+
+10dc, *skip next ch, dc in next ch* repeat from * to * to last 3 dc

@@ -52,7 +52,7 @@ repeatTimes : INT 'times' | INT 'time' | 'once' ;
 
 REP : '*'+ ;
 GENERICSTITCH : 'st' | 'sts' | 'stitch' | 'stitches' ;
-STITCHTYPE : 'sc' | 'dc' | 'tr' ;
+STITCHTYPE : 'sc' | 'dc' | 'tr' | 'hdc' | 'htr' | 'dtr' | 'ttr';
 SLIPSTITCH : 'sl' | 'sl st' | 'slip stitch' ;
 CHAINSTITCH : 'ch' | 'chain' | 'chain stitch' ;
 FINALTURN : 'TURN' | 'turn' ;
