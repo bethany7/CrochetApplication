@@ -1,14 +1,16 @@
 grammar CrochetPatternParser;
 
+//row : instructions+ ;
 //repeat : '*' instruction (',' instruction)* '*' 'repeat' ;
 instructions : instruction (',' instruction)*;
 
-instruction : repeatInstructions        //# RepeatInstrs
-              | chain                   //# ChainInstr
-              | stitches attachment     //# StitchInstr
-              | repeat                  //# RepeatMarker
-              | skip                    //# SkipInstr
-              | FINALTURN               //# FinalTurnInstr
+instruction : repeatInstructions        # RepeatInstrs
+              | chain                   # ChainInstr
+              | stitches direction     # StitchDirectionInstr
+              | stitches                # StitchInstr
+              | repeat                  # RepeatMarker
+              | skip                    # SkipInstr
+              | FINALTURN               # FinalTurnInstr
               ;
 
 repeatInstructions: 'repeat from' REP 'to' REP repeatTimes            # TimesRepeat
@@ -22,10 +24,15 @@ skip : 'skip' INT      # SkipCount
       | 'skip' stitches # SkipStitches
       ;
 
-attachment : inNext | inEach | inFirst | inLast | inChain;
+direction  : inNext     # InNextDir
+           | inEach     # InEachDir
+           | inFirst    # InFirstDir
+           | inLast     # InLastDir
+           | inChain    # InChainDir
+          ;
 
-inNext : 'in next' INT            # InNextX
-        |'in next' stitches       # InNextSt
+inNext : 'in next' INT
+        |'in next' stitches
         ;
 inEach : 'in each' stitches ;
 inFirst : 'in first' stitches ;
@@ -42,10 +49,10 @@ chain : CHAINSTITCH (INT)*
       ;
 
 stitches : ((INT)* stitch)+ ;
-stitch : GENERICSTITCH
-        | STITCHTYPE
-        | CHAINSTITCH
-        | SLIPSTITCH
+stitch : GENERICSTITCH    # GenericStitch
+        | STITCHTYPE      # StitchType
+        | CHAINSTITCH     # ChainStitch
+        | SLIPSTITCH      # SlipStitch
         ;
 
 repeatTimes : INT 'times' | INT 'time' | 'once' ;
