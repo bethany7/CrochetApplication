@@ -31,8 +31,12 @@ public class Row {
     return stitches.size();
   }
 
-  public Row getStitches() {
-    return this;
+  public Stitch getStitch(int i) {
+    return stitches.get(i);
+  }
+
+  public ArrayList<Stitch> getStitches() {
+    return stitches;
   }
 
   public Pattern getPattern() {

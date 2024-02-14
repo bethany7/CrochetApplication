@@ -14,6 +14,10 @@ public class Pattern {
     return pattern;
   }
 
+  public int getRowCount() {
+    return pattern.size();
+  }
+
   public Row getRow(int rowNum) {
     return pattern.get(rowNum - 1);
   }
