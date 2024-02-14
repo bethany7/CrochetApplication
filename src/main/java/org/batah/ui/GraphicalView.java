@@ -1,4 +1,4 @@
-package org.batah;
+package org.batah.ui;
 
 public class GraphicalView {
 }
