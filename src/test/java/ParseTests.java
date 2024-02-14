@@ -32,7 +32,7 @@ class ParseTests {
     }
 
     /**
-     * Test that the pattern has one row after adding a row
+     * Test that the pattern has two rows after adding a row
      */
 
     @Test
