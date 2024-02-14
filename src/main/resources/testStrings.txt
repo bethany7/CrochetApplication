@@ -8,6 +8,8 @@ ch 10, turn
 
 10 dc in next 10 tr
 
+1 dc, 1 tr, 1 dc
+
 dc in 4th ch from hook
 
 10dc, *tr in dc, dc in next ch* repeat from * to * 3 times
