@@ -1,8 +1,9 @@
 package org.batah.model.stitches;
 
+import org.batah.DrawInterface;
 import org.batah.model.*;
 
-public abstract class Stitch {
+public abstract class Stitch implements DrawInterface {
 
   Attachment attachment;
   StitchLoc parentStitch;
@@ -31,6 +32,10 @@ public abstract class Stitch {
     }
   }
 
+  public String getStitchName() {
+    return this.getClass().getSimpleName();
+  }
+
   public Attachment getAttachment() {
     return attachment;
   }
@@ -41,6 +46,10 @@ public abstract class Stitch {
 
   public StitchLoc getLoc() {
     return loc;
+  }
+
+  public void setParentStitch(StitchLoc parentStitch) {
+    this.parentStitch = parentStitch;
   }
 
   public enum Attachment {

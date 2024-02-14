@@ -13,4 +13,9 @@ public class TrebleCrochet extends Stitch{
   public TrebleCrochet(Attachment attachment, Row row) {
     super(attachment, row);
   }
+
+  @Override
+  public void drawStitch(Stitch stitch) {
+
+  }
 }

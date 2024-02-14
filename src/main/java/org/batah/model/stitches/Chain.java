@@ -12,4 +12,8 @@ public class Chain extends Stitch {
     super(Attachment.NONE, row);
   }
 
+  @Override
+  public void drawStitch(Stitch stitch) {
+
+  }
 }

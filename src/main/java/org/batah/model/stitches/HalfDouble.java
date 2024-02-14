@@ -14,4 +14,9 @@ public class HalfDouble extends Stitch {
   public HalfDouble(Attachment attachment, Row row) {
     super(attachment, row);
   }
+
+  @Override
+  public void drawStitch(Stitch stitch) {
+
+  }
 }
