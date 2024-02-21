@@ -61,6 +61,7 @@ public class CrochetApplication extends Application {
     CrochetPatternParserParser parser2 = new CrochetPatternParserParser(new CommonTokenStream(lexer2));
     ParseTree tree2 = parser2.instructions(); // begin parsing at instruction rule
 
+
     CrochetVisitor<String> eval = new CrochetVisitor<String>(pattern);
     eval.visit(tree);
     eval.visit(tree2);

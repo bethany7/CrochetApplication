@@ -69,7 +69,7 @@ public class PatternCanvas extends javafx.scene.canvas.Canvas{
 
       stitch.Draw(stitch, gc, offsetX, offsetY, scaleX, scaleY);
 
-      startCoords.add(new Coords((offsetX+(defaultStitchWidth * scaleX)/2)+20, offsetY - 2));
+      startCoords.add(new Coords((offsetX + (((double) defaultStitchWidth) / 2)), offsetY - 2));
 
       graphicalView.patternPane.getChildren().add(canv);
       offsetX += (defaultStitchWidth);
@@ -83,8 +83,6 @@ public class PatternCanvas extends javafx.scene.canvas.Canvas{
       int prevStitchIndex = row.getStitchCount() - 1 - j;
       offsetX = startCoords.get(prevStitchIndex).getX();
       offsetY = startCoords.get(prevStitchIndex).getY();
-
-
 
       var canv = new Canvas(width, height);
       var gc = canv.getGraphicsContext2D();

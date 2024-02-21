@@ -21,6 +21,7 @@ public class Chain extends Stitch {
       double scaleY) {
     // Draw the stitch
       gc.scale(scaleX, scaleY);
+
       double startY = (int) (offsetY / scaleY);
       gc.setStroke(javafx.scene.paint.Color.BLACK);
       gc.setLineWidth(4);
