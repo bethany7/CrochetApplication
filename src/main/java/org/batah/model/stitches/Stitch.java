@@ -1,14 +1,17 @@
 package org.batah.model.stitches;
 
-import org.batah.DrawInterface;
+import javafx.scene.canvas.GraphicsContext;
 import org.batah.model.*;
 
-public abstract class Stitch implements DrawInterface {
+public abstract class Stitch {
 
   Attachment attachment;
   StitchLoc parentStitch;
   StitchLoc loc;
   Pattern pattern;
+
+  double defaultStitchWidth = 100;
+  double defaultStitchHeight = 130;
 
   public Stitch(Attachment attachment, StitchLoc parentStitch,
       StitchLoc loc, Pattern pattern) {
@@ -16,6 +19,7 @@ public abstract class Stitch implements DrawInterface {
     this.parentStitch = parentStitch;
     this.loc = loc;
     this.pattern = pattern;
+
   }
 
   public Stitch(Attachment attachment, Row row) {
@@ -50,6 +54,19 @@ public abstract class Stitch implements DrawInterface {
 
   public void setParentStitch(StitchLoc parentStitch) {
     this.parentStitch = parentStitch;
+  }
+
+  public void Draw(Stitch stitch, GraphicsContext gc, double offsetX, double offsetY, double scaleX,
+      double scaleY) {
+    // Draw the stitch
+  }
+
+  public double getDefaultStitchHeight() {
+    return defaultStitchHeight;
+  }
+
+  public double getDefaultStitchWidth() {
+    return defaultStitchWidth;
   }
 
   public enum Attachment {

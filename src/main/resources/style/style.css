@@ -19,3 +19,9 @@
   -fx-padding: 15;
   -fx-spacing: 10;
 }
+
+
+.patternPane {
+  -fx-border-color: #000000;
+  -fx-border-width: 1;
+}

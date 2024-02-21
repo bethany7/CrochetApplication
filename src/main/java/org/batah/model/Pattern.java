@@ -26,4 +26,14 @@ public class Pattern {
     pattern.add(row);
   }
 
+  public int getMaxStitchCount() {
+    int maxStitchCount = 0;
+    for (Row row : pattern) {
+      if (row.getStitchCount() > maxStitchCount) {
+        maxStitchCount = row.getStitchCount();
+      }
+    }
+    return maxStitchCount;
+  }
+
 }

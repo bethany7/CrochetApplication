@@ -14,8 +14,5 @@ public class HalfTreble extends Stitch {
     super(attachment, row);
   }
 
-  @Override
-  public void drawStitch(Stitch stitch) {
 
-  }
 }

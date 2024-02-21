@@ -15,8 +15,5 @@ public class Slip extends Stitch {
     super(attachment, row);
   }
 
-  @Override
-  public void drawStitch(Stitch stitch) {
 
-  }
 }
