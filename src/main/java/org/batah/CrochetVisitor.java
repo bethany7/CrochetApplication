@@ -40,6 +40,7 @@ import org.batah.CrochetPatternParserParser.ToLastRepeatContext;
 import org.batah.model.Pattern;
 import org.batah.model.Row;
 import org.batah.model.stitches.Chain;
+import org.batah.model.stitches.Slip;
 import org.batah.model.stitches.Stitch;
 import org.batah.model.stitches.Stitch.Attachment;
 import org.batah.model.stitches.StitchBuilder;
@@ -111,11 +112,19 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     public String visitStitchInstr(StitchInstrContext ctx) {
         String x = visit(ctx.stitches());
         String[] parts = (String[]) x.toString().split(" ");
-        int i = Integer.parseInt((java.lang.String) parts[0]);
-        String y = parts[1];
-        for (int j = 0; j < i; j++) {
-            Stitch stitch = StitchBuilder.buildStitch((java.lang.String) y, Attachment.INTO, row);
+        if (parts.length < 2) {
+            Stitch stitch = StitchBuilder.buildStitch((java.lang.String) x, Attachment.INTO, row);
             row.addStitch(row, stitch);
+        }
+        else {
+            int i = Integer.parseInt((java.lang.String) parts[0]);
+            String y = parts[1];
+            for (int j = 0; j < i; j++) {
+                Stitch stitch = StitchBuilder.buildStitch((java.lang.String) y, Attachment.INTO,
+                    row);
+                System.out.println(y);
+                row.addStitch(row, stitch);
+            }
         }
         return super.visitStitchInstr(ctx);
     }
@@ -272,7 +281,7 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
 
     @Override
     public String visitSlipStitch(SlipStitchContext ctx) {
-        return super.visitSlipStitch(ctx);
+        return (String) ctx.getText();
     }
 
     @Override

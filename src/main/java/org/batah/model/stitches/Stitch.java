@@ -1,6 +1,7 @@
 package org.batah.model.stitches;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.shape.SVGPath;
 import org.batah.model.*;
 
 public abstract class Stitch {
@@ -10,8 +11,8 @@ public abstract class Stitch {
   StitchLoc loc;
   Pattern pattern;
 
-  double defaultStitchWidth = 100;
-  double defaultStitchHeight = 130;
+  double defaultStitchWidth = 0;
+  double defaultStitchHeight = 0;
 
   public Stitch(Attachment attachment, StitchLoc parentStitch,
       StitchLoc loc, Pattern pattern) {
@@ -56,17 +57,17 @@ public abstract class Stitch {
     this.parentStitch = parentStitch;
   }
 
-  public void Draw(Stitch stitch, GraphicsContext gc, double offsetX, double offsetY, double scaleX,
-      double scaleY) {
+  public SVGPath Draw() {
     // Draw the stitch
+    return null;
   }
 
   public double getDefaultStitchHeight() {
-    return defaultStitchHeight;
+    return this.defaultStitchHeight;
   }
 
   public double getDefaultStitchWidth() {
-    return defaultStitchWidth;
+    return this.defaultStitchWidth;
   }
 
   public enum Attachment {

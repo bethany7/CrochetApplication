@@ -1,29 +1,32 @@
 package org.batah.ui;
 
-import java.util.ArrayList;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.transform.Scale;
 import org.batah.model.Coords;
 import org.batah.model.Pattern;
+import org.batah.model.PatternCoords;
 import org.batah.model.Row;
-import org.batah.model.stitches.Stitch;
-import org.javatuples.Pair;
+import org.batah.model.RowCoords;
+import org.batah.model.StitchCoords;
 
-public class PatternCanvas extends javafx.scene.canvas.Canvas{
+public class PatternCanvas extends Pane {
 
   Pattern pattern;
   GraphicalView graphicalView;
 
-  double offsetX;
+  double offsetX = 0;
   double offsetY = 0;
 
   double scaleX = 1;
   double scaleY = 1;
 
-  ArrayList<Coords> startCoords = new ArrayList<>();
+  PatternCoords patternCoords;
 
   public PatternCanvas(Pattern pattern, GraphicalView graphicalView) {
     this.pattern = pattern;
     this.graphicalView = graphicalView;
+    this.patternCoords = new PatternCoords(pattern);
   }
 
   public void drawPattern(int width, int height) {
@@ -33,66 +36,126 @@ public class PatternCanvas extends javafx.scene.canvas.Canvas{
     var stitchCount = pattern.getMaxStitchCount();
 
     var stitchMaxWidth = ((width - 60) / stitchCount);
-    var stitchMaxHeight = (height / rowCount);
+    var stitchMaxHeight = ((height - 60) / rowCount);
 
     drawChain(pattern.getRow(1), width, height, stitchMaxWidth, stitchMaxHeight);
 
-
-
     for (int i = 2; i <= rowCount; i++) {
       var row = pattern.getRow(i);
-      drawRow(row, width, height, stitchMaxWidth, stitchMaxHeight);
-
+      drawRow(row);
     }
   }
 
   public void drawChain (Row row, int width, int height, int stitchMaxWidth, int stitchMaxHeight) {
-    offsetX = 20;
+
+    RowCoords rowCoords = new RowCoords(pattern, row.getRowNum());
+    var defaultStitchWidth = 200;
+    var defaultStitchHeight = 60;
+
+    scaleX = (double) stitchMaxWidth / defaultStitchWidth;
+    scaleY = (double) stitchMaxHeight / defaultStitchHeight;
+
+    if (scaleX < scaleY) {
+      scaleY = scaleX;
+    } else {
+      scaleX = scaleY;
+    }
+
+    offsetX = ((double) defaultStitchWidth /2) * scaleX + 10;
+    offsetY = (height - 40 - ((double) defaultStitchHeight /2 * scaleY));
+
     for (int j = 0; j < row.getStitchCount(); j++) {
 
-      var canv = new Canvas(width, height);
-      var gc = canv.getGraphicsContext2D();
       var stitch = row.getStitch(j);
 
-      var defaultStitchWidth = 100;
-      var defaultStitchHeight = 30;
+      SVGPath stitchPath = stitch.Draw();
 
-      scaleX = (double) stitchMaxWidth / defaultStitchWidth;
-      scaleY = (double) stitchMaxHeight / defaultStitchHeight;
-      if (scaleX < scaleY) {
-        scaleY = scaleX;
-      } else {
-        scaleX = scaleY;
-      }
+      stitchPath.setLayoutX(offsetX);
+      stitchPath.setLayoutY(offsetY);
+      stitchPath.setScaleX(scaleX);
+      stitchPath.setScaleY(scaleY);
 
-      offsetY = (height - 20 - (defaultStitchHeight * scaleY));
+      var stitchTop = stitchPath.getBoundsInParent().getMinY();
+      var stitchCenter = stitchPath.getBoundsInParent().getCenterX();
 
-      stitch.Draw(stitch, gc, offsetX, offsetY, scaleX, scaleY);
+      StitchCoords stitchCoords = new StitchCoords(stitch, new Coords(stitchCenter, stitchTop));
+      rowCoords.addStitchCoords(stitchCoords);
 
-      startCoords.add(new Coords((offsetX + (((double) defaultStitchWidth) / 2)), offsetY - 2));
+      graphicalView.patternPane.getChildren().add(stitchPath);
 
-      graphicalView.patternPane.getChildren().add(canv);
-      offsetX += (defaultStitchWidth);
+      offsetX += (defaultStitchWidth * scaleX);
     }
+
+    patternCoords.addRowCoords(rowCoords);
 
   }
-  public void drawRow(Row row, int width, int height, int stitchMaxWidth, int stitchMaxHeight) {
+  public void drawRow(Row row) {
+
+    RowCoords rowCoords = new RowCoords(pattern, row.getRowNum());
 
     for (int j = 0; j < row.getStitchCount(); j++) {
 
-      int prevStitchIndex = row.getStitchCount() - 1 - j;
-      offsetX = startCoords.get(prevStitchIndex).getX();
-      offsetY = startCoords.get(prevStitchIndex).getY();
-
-      var canv = new Canvas(width, height);
-      var gc = canv.getGraphicsContext2D();
+      int parentStitchNum;
       var stitch = row.getStitch(j);
+      SVGPath stitchPath;
 
-      stitch.Draw(stitch, gc, offsetX, offsetY, scaleX, scaleY);
-      graphicalView.patternPane.getChildren().add(canv);
+      if (stitch.getStitchName().equals("Chain") && j != 0) {
 
+        var prevStitchCoords = rowCoords.getStitchCoords(j - 1);
+        offsetX = prevStitchCoords.getCoords().getX() + (stitch.getDefaultStitchWidth() * scaleX);
+        offsetY =
+            prevStitchCoords.getCoords().getY() - ((stitch.getDefaultStitchHeight() * scaleY) / 2);
+
+        stitchPath = stitch.Draw();
+
+        stitchPath.setLayoutX(offsetX);
+        stitchPath.setLayoutY(offsetY);
+        stitchPath.getTransforms().add(new Scale(scaleX, scaleY));
+
+
+      }
+      else if (stitch.getStitchName().equals("Slip")){
+        parentStitchNum = stitch.getParentStitch().getStitchNum() - 1;
+        var prevStitchCoords = rowCoords.getStitchCoords(j - 1);
+
+        offsetX = patternCoords.getStitchCoords(row.getRowNum() - 1, parentStitchNum).getCoords().getX()
+                - (stitch.getDefaultStitchWidth() * scaleX / 2);
+        offsetY = prevStitchCoords.getCoords().getY() - ((stitch.getDefaultStitchHeight() * scaleY) / 2);
+
+        stitchPath = stitch.Draw();
+
+        stitchPath.relocate(offsetX, offsetY);
+        stitchPath.getTransforms().add(new Scale(scaleX, scaleY));
+
+      }
+
+      else {
+        parentStitchNum = stitch.getParentStitch().getStitchNum() - 1;
+
+        offsetX =
+            patternCoords.getStitchCoords(row.getRowNum() - 1, parentStitchNum).getCoords().getX()
+                - (stitch.getDefaultStitchWidth() * scaleX / 2);
+        offsetY =
+            (patternCoords.getStitchCoords(row.getRowNum() - 1, parentStitchNum).getCoords().getY())
+                - (stitch.getDefaultStitchHeight() * scaleY) - (5 * scaleY);
+
+        stitchPath = stitch.Draw();
+
+        stitchPath.relocate(offsetX, offsetY);
+        stitchPath.getTransforms().add(new Scale(scaleX, scaleY));
+
+      }
+
+      graphicalView.patternPane.getChildren().add(stitchPath);
+
+      var stitchTop = stitchPath.getBoundsInParent().getMinY();
+      var stitchCenter = stitchPath.getBoundsInParent().getCenterX();
+      StitchCoords stitchCoords = new StitchCoords(stitch, new Coords(stitchCenter, stitchTop));
+      rowCoords.addStitchCoords(stitchCoords);
 
     }
+
+    patternCoords.addRowCoords(rowCoords);
 
   }
 }

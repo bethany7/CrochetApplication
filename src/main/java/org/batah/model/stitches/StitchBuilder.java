@@ -17,7 +17,6 @@ public class StitchBuilder {
       case "dc" -> new DoubleCrochet(attachment, row);
       case "sl" -> new Slip(attachment, row);
       case "tr" -> new TrebleCrochet(attachment, row);
-      case "hdc" -> new HalfDouble(attachment, row);
       case "dtr" -> new DoubleTreble(attachment, row);
       case "htr" -> new HalfTreble(attachment, row);
       case "ttr" -> new TripleTreble(attachment, row);

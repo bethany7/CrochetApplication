@@ -1,36 +1,33 @@
 package org.batah.model.stitches;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.shape.SVGPath;
 import org.batah.model.Row;
 
 public class Chain extends Stitch {
 
   public Chain(Attachment attachment, Row row) {
     super(attachment, row);
-    this.defaultStitchHeight = 30;
-    this.defaultStitchWidth = 100;
+    this.defaultStitchHeight = 60;
+    this.defaultStitchWidth = 200;
   }
 
   public Chain(Row row) {
     super(Attachment.NONE, row);
-    this.defaultStitchHeight = 30;
-    this.defaultStitchWidth = 100;
+    this.defaultStitchHeight = 60;
+    this.defaultStitchWidth = 200;
   }
 
-  public void Draw(Stitch stitch, GraphicsContext gc, double offsetX, double offsetY, double scaleX,
-      double scaleY) {
-    // Draw the stitch
-      gc.scale(scaleX, scaleY);
+  public SVGPath Draw() {
 
-      double startY = (int) (offsetY / scaleY);
-      gc.setStroke(javafx.scene.paint.Color.BLACK);
-      gc.setLineWidth(4);
-      gc.beginPath();
-      gc.moveTo(offsetX, startY);
-      gc.strokeOval(offsetX, startY, 100, 30);
+    SVGPath path = new SVGPath();
+    path.setFill(null);
+    path.setStroke(javafx.scene.paint.Color.BLACK);
+    path.setStrokeWidth(2);
+    path.setContent("M 0,0 a 100,30 0 1,0 1,0 z");
 
-      gc.closePath();
-      gc.stroke();
+    return path;
+
     }
 
 }

@@ -39,10 +39,6 @@ public class GraphicalView extends BaseWindow {
     var testText2 = new Text("Stitches Go Here!");
     stitchPanel.getChildren().add(testText2);
 
-    // Pattern Pane
-    this.patternPane = new Pane();
-    main.setCenter(patternPane);
-
     // Settings Pane
     var settingsPane = new VBox();
     settingsPane.setPrefWidth(300);
@@ -51,9 +47,17 @@ public class GraphicalView extends BaseWindow {
     var testText4 = new Text("Settings Go Here!");
     settingsPane.getChildren().add(testText4);
 
+    // Pattern Pane
+    this.patternPane = new Pane();
+    patternPane.setMaxWidth((width - 600));
+    patternPane.setMaxHeight((height - 250));
+    patternPane.getStyleClass().add("patternPane");
+    main.setCenter(patternPane);
+
     // Add Row Pane?
     var addRowPane = new HBox();
     addRowPane.setPrefHeight(200);
+    addRowPane.setPrefWidth(width);
     addRowPane.getStyleClass().add("addRowPane");
     main.setBottom(addRowPane);
     var testText5 = new Text("Add Row Goes Here!");
