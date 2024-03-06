@@ -6,6 +6,9 @@ instructions : instruction (',' instruction)*;
 
 instruction : repeatInstructions        # RepeatInstrs
               | chain                   # ChainInstr
+              | stitches inChain        # InChainInstr
+              | decrease                # DecreaseInstr
+              | increase                # IncreaseInstr
               | stitches direction     # StitchDirectionInstr
               | stitches                # StitchInstr
               | repeat                  # RepeatMarker
@@ -19,20 +22,19 @@ repeatInstructions: 'repeat from' REP 'to' REP repeatTimes            # TimesRep
 
 repeat : REP instructions ;
 
-skip : 'skip' INT      # SkipCount
-      | 'skip next' stitches # SkipNext
-      | 'skip' stitches # SkipStitches
+skip : 'skip' INT
+      | 'skip next' stitches
+      | 'skip' stitches
       ;
 
 direction  : inNext     # InNextDir
            | inEach     # InEachDir
            | inFirst    # InFirstDir
            | inLast     # InLastDir
-           | inChain    # InChainDir
           ;
 
-inNext : 'in next' INT
-        |'in next' stitches
+inNext  : 'in next' INT
+        | 'in next' stitches
         ;
 inEach : 'in each' stitches ;
 inFirst : 'in first' stitches ;
@@ -48,6 +50,13 @@ chain : CHAINSTITCH (INT)*
       | CHAINSTITCH INT 'up'
       ;
 
+decrease : (INT)* STITCHTYPE INT 'tog';
+increase : INT STITCHTYPE 'in same' stitch    # SingleIncrease
+         | INT STITCHTYPE 'in next' stitches  # NIncreases
+         | INT STITCHTYPE 'in each' stitch    # AllIncreases
+         ;
+
+
 stitches : ((INT)* stitch)+ ;
 stitch : GENERICSTITCH    # GenericStitch
         | STITCHTYPE      # StitchType
@@ -59,7 +68,7 @@ repeatTimes : INT 'times' | INT 'time' | 'once' ;
 
 REP : '*'+ ;
 GENERICSTITCH : 'st' | 'sts' | 'stitch' | 'stitches' ;
-STITCHTYPE : 'sc' | 'dc' | 'tr' | 'hdc' | 'htr' | 'dtr' | 'ttr';
+STITCHTYPE : 'dc' | 'tr' | 'hdc' | 'htr' | 'dtr' | 'ttr';
 SLIPSTITCH : 'sl' | 'sl st' | 'slip stitch' ;
 CHAINSTITCH : 'ch' | 'chain' | 'chain stitch' ;
 FINALTURN : 'TURN' | 'turn' ;

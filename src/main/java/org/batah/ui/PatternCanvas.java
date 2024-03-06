@@ -115,7 +115,7 @@ public class PatternCanvas extends Pane {
 
       }
       else if (stitch.getStitchName().equals("Slip")){
-        parentStitchNum = stitch.getParentStitch().getStitchNum() - 1;
+        parentStitchNum = stitch.getParentStitch(0).getStitchNum() - 1;
         var prevStitchCoords = rowCoords.getStitchCoords(j - 1);
 
         offsetX = patternCoords.getStitchCoords(row.getRowNum() - 1, parentStitchNum).getCoords().getX()
@@ -130,7 +130,7 @@ public class PatternCanvas extends Pane {
       }
 
       else {
-        parentStitchNum = stitch.getParentStitch().getStitchNum() - 1;
+        parentStitchNum = stitch.getParentStitch(0).getStitchNum() - 1;
 
         offsetX =
             patternCoords.getStitchCoords(row.getRowNum() - 1, parentStitchNum).getCoords().getX()
@@ -152,6 +152,7 @@ public class PatternCanvas extends Pane {
       var stitchCenter = stitchPath.getBoundsInParent().getCenterX();
       StitchCoords stitchCoords = new StitchCoords(stitch, new Coords(stitchCenter, stitchTop));
       rowCoords.addStitchCoords(stitchCoords);
+      stitchPath.setOnMousePressed(e -> stitchPath.setStroke(javafx.scene.paint.Color.RED));
 
     }
 

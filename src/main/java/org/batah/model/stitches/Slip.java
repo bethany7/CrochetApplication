@@ -1,5 +1,6 @@
 package org.batah.model.stitches;
 
+import java.util.ArrayList;
 import javafx.scene.shape.SVGPath;
 import org.batah.model.Pattern;
 import org.batah.model.Row;
@@ -7,18 +8,18 @@ import org.batah.model.Row;
 public class Slip extends Stitch {
 
 
-  public Slip(Attachment attachment, StitchLoc parentStitch, StitchLoc loc,
-      Pattern pattern) {
-    super(attachment, parentStitch, loc, pattern);
+  public Slip(Attachment attachment, ArrayList<StitchLoc> parentStitches, StitchLoc loc,
+      Row row) {
+    super(attachment, parentStitches, loc, row);
     this.defaultStitchWidth = 100;
     this.defaultStitchHeight = 100;
   }
 
-  public Slip(Attachment attachment, Row row) {
-    super(attachment, row);
-    this.defaultStitchWidth = 100;
-    this.defaultStitchHeight = 100;
-  }
+//  public Slip(Attachment attachment, Row row) {
+//    super(attachment, row);
+//    this.defaultStitchWidth = 100;
+//    this.defaultStitchHeight = 100;
+//  }
 
   public SVGPath Draw() {
     // Draw the stitch

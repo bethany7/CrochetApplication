@@ -1,5 +1,6 @@
 package org.batah.model.stitches;
 
+import java.util.ArrayList;
 import javafx.scene.shape.SVGPath;
 import org.batah.model.Pattern;
 import org.batah.model.Row;
@@ -7,18 +8,18 @@ import org.batah.model.Row;
 public class DoubleTreble extends Stitch{
 
 
-  public DoubleTreble(Attachment attachment, StitchLoc parentStitch, StitchLoc loc,
-      Pattern pattern) {
-    super(attachment, parentStitch, loc, pattern);
+  public DoubleTreble(Attachment attachment, ArrayList<StitchLoc> parentStitches, StitchLoc loc,
+      Row row) {
+    super(attachment, parentStitches, loc, row);
     this.defaultStitchWidth = 200;
     this.defaultStitchHeight = 320;
   }
 
-  public DoubleTreble(Attachment attachment, Row row) {
-    super(attachment, row);
-    this.defaultStitchWidth = 200;
-    this.defaultStitchHeight = 320;
-  }
+//  public DoubleTreble(Attachment attachment, Row row) {
+//    super(attachment, row);
+//    this.defaultStitchWidth = 200;
+//    this.defaultStitchHeight = 320;
+//  }
 
   public SVGPath Draw() {
     // Draw the stitch
