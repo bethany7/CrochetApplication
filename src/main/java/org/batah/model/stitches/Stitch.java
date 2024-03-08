@@ -1,26 +1,34 @@
 package org.batah.model.stitches;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.SVGPath;
 import org.batah.model.*;
 
-public abstract class Stitch {
+public abstract class Stitch implements Serializable {
 
   Attachment attachment;
-  ArrayList <StitchLoc> parentStitches = new ArrayList <StitchLoc> ();
+  ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
   StitchLoc loc;
   Pattern pattern;
 
   double defaultStitchWidth = 0;
   double defaultStitchHeight = 0;
 
-  public Stitch(Attachment attachment, ArrayList <StitchLoc> parentStitches, StitchLoc loc, Row row) {
+  public Stitch(Attachment attachment, ArrayList<StitchLoc> parentStitches, StitchLoc loc,
+      Row row) {
     this.attachment = attachment;
     this.parentStitches = parentStitches;
     this.loc = loc;
     this.pattern = row.getPattern();
 
+  }
+
+  @Override
+  public String toString() {
+    return '{' + this.getStitchName() + ", " + "attachment=" + attachment + ", parentStitches="
+        + parentStitches + ", loc=" + loc + '}';
   }
 
 //  public Stitch(Attachment attachment, Row row) {
@@ -55,6 +63,10 @@ public abstract class Stitch {
     return loc;
   }
 
+  public void setLoc(StitchLoc loc) {
+    this.loc = loc;
+  }
+
   public void addParentStitch(StitchLoc parentStitch) {
     parentStitches.add(parentStitch);
   }
@@ -74,6 +86,14 @@ public abstract class Stitch {
 
   public double getDefaultStitchWidth() {
     return this.defaultStitchWidth;
+  }
+
+  public void redoLoc() {
+    if (this.loc.getRowNum() != this.getParentStitch(0).getRowNum() + 1) {
+      StitchLoc newLoc = new StitchLoc(this.getParentStitch(0).getRowNum() + 1,
+          this.loc.getStitchNum());
+      this.setLoc(newLoc);
+    }
   }
 
   public enum Attachment {

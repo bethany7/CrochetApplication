@@ -1,15 +1,21 @@
 package org.batah.model;
 
+import java.io.Serializable;
 import org.batah.model.stitches.Stitch;
 
-public class StitchCoords {
+public class StitchAttachmentCoords implements Serializable {
 
   Stitch stitch;
   Coords coords;
 
-  public StitchCoords(Stitch stitch, Coords coords) {
+  public StitchAttachmentCoords(Stitch stitch, Coords coords) {
     this.stitch = stitch;
     this.coords = coords;
+  }
+
+  @Override
+  public String toString() {
+    return "" + stitch + " " + coords;
   }
 
   public Stitch getStitch() {

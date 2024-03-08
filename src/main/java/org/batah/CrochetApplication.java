@@ -1,5 +1,6 @@
 package org.batah;
 
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -15,6 +16,7 @@ import org.batah.ui.TextView;
 public class CrochetApplication extends Application {
 
   private Stage stage;
+
   @Override
   public void start(Stage stage) {
     this.stage = stage;
@@ -43,28 +45,57 @@ public class CrochetApplication extends Application {
     stage.show();
     stage.centerOnScreen();
 
+//    Pattern pattern = new Pattern();
+//    CharStream input = CharStreams.fromString("ch 30");
+//    CrochetPatternParserLexer lexer = new CrochetPatternParserLexer(input);
+//    CrochetPatternParserParser parser = new CrochetPatternParserParser(
+//        new CommonTokenStream(lexer));
+//    ParseTree tree = parser.instructions(); // begin parsing at instruction rule
+////    System.out.println(tree.toStringTree(parser)); // print LISP-style
+//
+//    CharStream input2 = CharStreams.fromString("5dc, 5 tr, 5 dc, 15 tr");
+//    CrochetPatternParserLexer lexer2 = new CrochetPatternParserLexer(input2);
+//    CrochetPatternParserParser parser2 = new CrochetPatternParserParser(
+//        new CommonTokenStream(lexer2));
+//    ParseTree tree2 = parser2.instructions(); // begin parsing at instruction rule
+//
+//    CharStream input3 = CharStreams.fromString("15 dtr, ch 1, 14 tr");
+//    CrochetPatternParserLexer lexer3 = new CrochetPatternParserLexer(input3);
+//    CrochetPatternParserParser parser3 = new CrochetPatternParserParser(
+//        new CommonTokenStream(lexer3));
+//    ParseTree tree3 = parser3.instructions(); // begin parsing at instruction rule
+//
+//    CharStream input4 = CharStreams.fromString("10 dtr");
+//    CrochetPatternParserLexer lexer4 = new CrochetPatternParserLexer(input4);
+//    CrochetPatternParserParser parser4 = new CrochetPatternParserParser(
+//        new CommonTokenStream(lexer4));
+//    ParseTree tree4 = parser4.instructions(); // begin parsing at instruction rule
+
     Pattern pattern = new Pattern();
-    CharStream input = CharStreams.fromString("ch 30");
+    CharStream input = CharStreams.fromString("ch 10");
     CrochetPatternParserLexer lexer = new CrochetPatternParserLexer(input);
-    CrochetPatternParserParser parser = new CrochetPatternParserParser(new CommonTokenStream(lexer));
+    CrochetPatternParserParser parser = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer));
     ParseTree tree = parser.instructions(); // begin parsing at instruction rule
 //    System.out.println(tree.toStringTree(parser)); // print LISP-style
 
-    CharStream input2 = CharStreams.fromString("5dc, 5 tr, 5 dc, 15 tr");
+    CharStream input2 = CharStreams.fromString("5dc, 5 tr");
     CrochetPatternParserLexer lexer2 = new CrochetPatternParserLexer(input2);
-    CrochetPatternParserParser parser2 = new CrochetPatternParserParser(new CommonTokenStream(lexer2));
+    CrochetPatternParserParser parser2 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer2));
     ParseTree tree2 = parser2.instructions(); // begin parsing at instruction rule
 
-    CharStream input3 = CharStreams.fromString("15 dtr, ch 1, 14 tr");
+    CharStream input3 = CharStreams.fromString("5 dtr, ch 1, 4 tr");
     CrochetPatternParserLexer lexer3 = new CrochetPatternParserLexer(input3);
-    CrochetPatternParserParser parser3 = new CrochetPatternParserParser(new CommonTokenStream(lexer3));
+    CrochetPatternParserParser parser3 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer3));
     ParseTree tree3 = parser3.instructions(); // begin parsing at instruction rule
 
-    CharStream input4 = CharStreams.fromString("30 dtr");
+    CharStream input4 = CharStreams.fromString("6 dtr");
     CrochetPatternParserLexer lexer4 = new CrochetPatternParserLexer(input4);
-    CrochetPatternParserParser parser4 = new CrochetPatternParserParser(new CommonTokenStream(lexer4));
+    CrochetPatternParserParser parser4 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer4));
     ParseTree tree4 = parser4.instructions(); // begin parsing at instruction rule
-
 
     CrochetVisitor<String> eval = new CrochetVisitor<String>(pattern);
     eval.visit(tree);

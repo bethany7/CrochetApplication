@@ -1,13 +1,19 @@
 package org.batah.model.stitches;
 
+import java.io.Serializable;
 import org.javatuples.Pair;
 
-public class StitchLoc {
+public class StitchLoc implements Serializable {
 
   Pair<Integer, Integer> loc;
 
   public StitchLoc(int rowNum, int stitchNum) {
     this.loc = new Pair<>(rowNum, stitchNum);
+  }
+
+  @Override
+  public String toString() {
+    return "" + loc.getValue0() + "," + loc.getValue1();
   }
 
   public Pair<Integer, Integer> getLoc() {

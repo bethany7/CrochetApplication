@@ -1,6 +1,8 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -8,6 +10,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.batah.CrochetPatternParserLexer;
 import org.batah.CrochetPatternParserParser;
 import org.batah.CrochetVisitor;
+import org.batah.SerializationUtil;
 import org.batah.model.Pattern;
 import org.batah.model.Row;
 import org.batah.model.stitches.Stitch;
@@ -151,6 +154,20 @@ class ParseTests {
     Stitch parentStitch = pattern.getRow(parentStitchLoc.getRowNum())
         .getStitch(parentStitchLoc.getStitchNum());
     assertEquals("DoubleCrochet", parentStitch.getStitchName());
+    try {
+      SerializationUtil.serialize(pattern, "pattern.ser");
+    } catch (IOException e) {
+      e.printStackTrace();
+      return;
+    }
+
+    try {
+      Pattern pattern2 = (Pattern) SerializationUtil.deserialize("pattern.ser");
+      System.out.println("pattern object: " + pattern);
+      System.out.println("Deserialized pattern object: " + pattern2);
+    } catch (ClassNotFoundException | IOException e) {
+      e.printStackTrace();
+    }
 
   }
 
@@ -395,4 +412,5 @@ class ParseTests {
     assertEquals(1, pattern.getRow(3).getStitch(9).getParentStitch(0).getStitchNum());
 
   }
+
 }
