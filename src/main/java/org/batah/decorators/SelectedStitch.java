@@ -1,26 +1,17 @@
 package org.batah.decorators;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.shape.SVGPath;
-import org.batah.model.StitchAttachmentCoords;
 
 public class SelectedStitch {
 
   SVGPath stitchPath;
-  StitchAttachmentCoords stitchAttachmentCoords;
 
 
-  public SelectedStitch(SVGPath stitchPath, StitchAttachmentCoords stitchAttachmentCoords) {
+  public SelectedStitch(SVGPath stitchPath) {
     this.stitchPath = stitchPath;
-    this.stitchAttachmentCoords = stitchAttachmentCoords;
   }
 
   public SVGPath drawBorderOnSelectedStitch() {

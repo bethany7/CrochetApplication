@@ -2,6 +2,7 @@ package org.batah.model.stitches;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.SVGPath;
 import org.batah.model.*;
@@ -9,10 +10,9 @@ import org.batah.model.*;
 public abstract class Stitch implements Serializable {
 
   Attachment attachment;
-  ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
+  ArrayList<StitchLoc> parentStitches;
   StitchLoc loc;
   Pattern pattern;
-
   double defaultStitchWidth = 0;
   double defaultStitchHeight = 0;
 
@@ -94,6 +94,10 @@ public abstract class Stitch implements Serializable {
           this.loc.getStitchNum());
       this.setLoc(newLoc);
     }
+  }
+
+  public int getFirstParentStitchNum() {
+    return this.getParentStitch(0).getStitchNum();
   }
 
   public enum Attachment {

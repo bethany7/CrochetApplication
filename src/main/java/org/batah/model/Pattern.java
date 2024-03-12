@@ -1,6 +1,10 @@
 package org.batah.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 import org.batah.model.stitches.Stitch;
@@ -10,14 +14,29 @@ import org.batah.model.stitches.StitchLoc;
 public class Pattern implements Serializable {
 
   ArrayList<Row> pattern;
+  ArrayList<RowBounds> rowBoundsList;
+
+  private static final long serialVersionUID = 1L;
+
 
   public Pattern() {
     this.pattern = new ArrayList<>();
+    this.rowBoundsList = new ArrayList<>();
   }
+
+  public Pattern(Pattern pattern, ArrayList<RowBounds> rowBoundsList) {
+    this.pattern = new ArrayList<>();
+    this.rowBoundsList = rowBoundsList;
+  }
+
 
   @Override
   public String toString() {
-    return "" + pattern;
+    if (rowBoundsList.isEmpty()) {
+      return "" + pattern;
+    } else {
+      return "" + rowBoundsList;
+    }
   }
 
   public ArrayList<Row> getPattern() {
@@ -46,60 +65,51 @@ public class Pattern implements Serializable {
     return maxStitchCount;
   }
 
-//  public void sortStitches() {
-//    for (Row row : pattern) {
-//      ArrayList<Stitch> stitches = row.getStitches();
-//      for (Stitch stitch : stitches) {
-//        if (stitch.getAttachment() != Attachment.NONE) {
-//          stitch.redoLoc();
-//          if (stitch.getLoc().getRowNum() != row.getRowNum()) {
-//            getRow(row.getRowNum()).removeStitch(getRow(row.getRowNum()), stitch);
-//            getRow(stitch.getLoc().getRowNum()).addStitch(getRow(stitch.getLoc().getRowNum()),
-//                stitch);
-//          }
-//        }
-//      }
-//      System.out.println("Sorting stitches: " + row.getStitches());
-//      stitches.sort(
-//          Comparator.comparingInt((Stitch s) ->
-//              s.getParentStitch(0).getStitchNum()).reversed());
-//      System.out.println("Sorted stitches: " + pattern);
-//      //renumber stitches
-//      for (int i = 0; i < pattern.size(); i++) {
-//        Stitch stitch = stitches.get(i);
-//        stitch.setLoc(new StitchLoc(stitch.getLoc().getRowNum(), i + 1));
-//      }
-//      System.out.println("Renumbered stitches: " + pattern);
-//
-//    }
-//  }
+  public void addRowBounds(RowBounds rowBounds) {
+    this.rowBoundsList.add(rowBounds);
+  }
 
-//  public void sortStitches() {
-//    for (Row row : pattern) {
-//      ArrayList<Stitch> stitches = new ArrayList<>(row.getStitches());
-//      for (Stitch stitch : stitches) {
-//        if (stitch.getAttachment() != Attachment.NONE) {
-//          stitch.redoLoc();
-//          if (stitch.getLoc().getRowNum() != row.getRowNum()) {
-//            row.removeStitch(row, stitch);
-//            getRow(stitch.getLoc().getRowNum()).addStitch(getRow(stitch.getLoc().getRowNum()),
-//                stitch);
-//          }
-//        }
-//      }
-//      System.out.println("Sorting stitches: " + row.getStitches());
-//      row.getStitches().sort(
-//          Comparator.comparingInt((Stitch s) -> s.getParentStitch(0).getStitchNum()));
-//      System.out.println("Sorted stitches: " + pattern);
-      //renumber stitches
-//      for (int i = 0; i < row.getStitches().size(); i++) {
-//        Stitch stitch = row.getStitches().get(i);
-//        stitch.setLoc(new StitchLoc(stitch.getLoc().getRowNum(), i + 1));
-//      }
-//
-//
-//      System.out.println("Renumbered stitches: " + pattern);
-//    }
-//  }
+  public ArrayList<RowBounds> getRowBoundsList() {
+    return rowBoundsList;
+  }
+
+  public RowBounds getRowBounds(int rowNum) {
+    return rowBoundsList.get(rowNum - 1);
+  }
+
+  public StitchBounds getStitchBounds(int rowNum, int stitchNum) {
+    return rowBoundsList.get(rowNum - 1).getStitchAndBounds(stitchNum);
+  }
+
+  public ArrayList<StitchBounds> getStitchBoundsList(int rowNum) {
+    return rowBoundsList.get(rowNum - 1).getStitchBoundsList();
+  }
+
+  public StitchBounds getStitchAndBounds(int rowNum, int stitchNum) {
+    return rowBoundsList.get(rowNum - 1).getStitchAndBounds(stitchNum);
+  }
+
+  public ArrayList<Coords> getAllAttachmentCoords() {
+    ArrayList<Coords> allCoords = new ArrayList<>();
+    for (RowBounds rowBounds : rowBoundsList) {
+      for (StitchBounds stitchBounds : rowBounds.getStitchBoundsList()) {
+        allCoords.add(stitchBounds.getAttachmentCoords());
+      }
+    }
+    return allCoords;
+  }
+
+  public StitchLoc getStitchLocByAttachmentCoords(Coords coords) {
+    for (RowBounds rowBounds : rowBoundsList) {
+      for (StitchBounds stitchBounds : rowBounds.getStitchBoundsList()) {
+        if (stitchBounds.getAttachmentCoords().equals(coords)) {
+          return stitchBounds.getStitch().getLoc();
+        }
+      }
+    }
+    return null;
+
+  }
+
 
 }

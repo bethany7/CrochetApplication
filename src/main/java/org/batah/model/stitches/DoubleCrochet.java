@@ -1,6 +1,7 @@
 package org.batah.model.stitches;
 
 import java.util.ArrayList;
+import javafx.geometry.Bounds;
 import javafx.scene.shape.SVGPath;
 import org.batah.model.*;
 
