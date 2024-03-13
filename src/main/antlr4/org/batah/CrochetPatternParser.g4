@@ -2,10 +2,12 @@ grammar CrochetPatternParser;
 
 //row : instructions+ ;
 //repeat : '*' instruction (',' instruction)* '*' 'repeat' ;
+
 instructions : instruction (',' instruction)*;
 
-instruction : repeatInstructions        # RepeatInstrs
-              | chain                   # ChainInstr
+instructions2 : instruction (',' instruction)*;
+
+instruction :  chain                   # ChainInstr
               | stitches inChain        # InChainInstr
               | decrease                # DecreaseInstr
               | increase                # IncreaseInstr
@@ -17,10 +19,10 @@ instruction : repeatInstructions        # RepeatInstrs
               ;
 
 repeatInstructions: 'repeat from' REP 'to' REP repeatTimes            # TimesRepeat
-                    | 'repeat from' REP 'to' REP 'to last' stitches   # ToLastRepeat
+                    | 'repeat' repeatTimes                           # ShortTimesRepeat
                     ;
 
-repeat : REP instructions ;
+repeat : REP instructions2 REP repeatInstructions;
 
 skip : 'skip' INT
       | 'skip next' stitches

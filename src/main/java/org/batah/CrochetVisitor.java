@@ -14,8 +14,10 @@ import org.batah.CrochetPatternParserParser.InChainInstrContext;
 import org.batah.CrochetPatternParserParser.InChainNContext;
 import org.batah.CrochetPatternParserParser.InstructionsContext;
 import org.batah.CrochetPatternParserParser.NIncreasesContext;
-import org.batah.CrochetPatternParserParser.RepeatInstrsContext;
+import org.batah.CrochetPatternParserParser.RepeatContext;
+import org.batah.CrochetPatternParserParser.RepeatMarkerContext;
 import org.batah.CrochetPatternParserParser.RepeatTimesContext;
+import org.batah.CrochetPatternParserParser.ShortTimesRepeatContext;
 import org.batah.CrochetPatternParserParser.SingleIncreaseContext;
 import org.batah.CrochetPatternParserParser.SkipContext;
 import org.batah.CrochetPatternParserParser.SlipStitchContext;
@@ -23,6 +25,7 @@ import org.batah.CrochetPatternParserParser.StitchDirectionInstrContext;
 import org.batah.CrochetPatternParserParser.StitchInstrContext;
 import org.batah.CrochetPatternParserParser.StitchTypeContext;
 import org.batah.CrochetPatternParserParser.StitchesContext;
+import org.batah.CrochetPatternParserParser.TimesRepeatContext;
 import org.batah.model.Pattern;
 import org.batah.model.Row;
 import org.batah.model.stitches.Chain;
@@ -54,52 +57,12 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     return super.visitInstructions(ctx);
   }
 
-  @Override
-  public String visitRepeatInstrs(RepeatInstrsContext ctx) {
-    return super.visitRepeatInstrs(ctx);
-  }
 
   @Override
   public String visitChainInstr(ChainInstrContext ctx) {
     return super.visitChainInstr(ctx);
   }
 
-//  @Override
-//  public String visitStitchDirectionInstr(StitchDirectionInstrContext ctx) {
-//    String y = visit(ctx.stitches());
-//    String z = visit(ctx.direction());
-//    String[] newStitchParts = (String[]) y.toString().split(" ");
-//    String[] parentStitchParts = (String[]) z.toString().split(" ");
-//    int numOfParentStitch = Integer.parseInt((java.lang.String) parentStitchParts[0]);
-//    int numOfStitches;
-//    String stitchType;
-//    if (newStitchParts.length < 2) {
-//      stitchType = newStitchParts[0];
-//      int parentRowNum = row.getRowNum() - 1;
-//      int parentRowLength = pattern.getRow(parentRowNum).getStitchCount();
-//      ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
-//      StitchLoc parentStitch = new StitchLoc(parentRowNum, parentRowLength - numOfParentStitch + 1);
-//      parentStitches.add(parentStitch);
-//      Stitch stitch = StitchBuilder.buildStitchExact((java.lang.String) stitchType, Attachment.INTO,
-//          parentStitches, new StitchLoc(row.getRowNum(), row.getStitchCount() + 1),
-//          row);
-//      row.addStitch(row, stitch);
-//    } else {
-//      numOfStitches = Integer.parseInt((java.lang.String) newStitchParts[0]);
-//      stitchType = newStitchParts[1];
-//
-//      if (numOfStitches == numOfParentStitch) {
-//        for (int k = 0; k < numOfStitches; k++) {
-//          Stitch stitch = StitchBuilder.buildStitch((java.lang.String) stitchType,
-//              Attachment.INTO, row);
-//          row.addStitch(row, stitch);
-//        }
-//      } else {
-//        System.out.println("Error: stitch count does not match parent stitch count");
-//      }
-//    }
-//    return super.visitStitchDirectionInstr(ctx);
-//  }
 
   @Override
   public String visitStitchDirectionInstr(StitchDirectionInstrContext ctx) {
@@ -168,17 +131,44 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     return super.visitStitchInstr(ctx);
   }
 
-  //  @Override
-//  public String visitDecreaseInstr(DecreaseInstrContext ctx) {
-//    return super.visitDecreaseInstr(ctx);
-//  }
-//
-//  @Override
-//  public String visitIncreaseInstr(IncreaseInstrContext ctx) {
-//    return super.visitIncreaseInstr(ctx);
-//  }
-//
-//
+  @Override
+  public String visitRepeatMarker(RepeatMarkerContext ctx) {
+
+    return super.visitRepeatMarker(ctx);
+  }
+
+  @Override
+  public String visitTimesRepeat(TimesRepeatContext ctx) {
+
+    return super.visitTimesRepeat(ctx);
+  }
+
+  @Override
+  public String visitShortTimesRepeat(ShortTimesRepeatContext ctx) {
+    return super.visitShortTimesRepeat(ctx);
+  }
+
+  @Override
+  public String visitRepeatTimes(RepeatTimesContext ctx) {
+    if (ctx.INT() != null) {
+      var times = ctx.INT().getText();
+      return (String) times;
+    } else {
+      var x = "1";
+      return (String) x;
+    }
+  }
+
+  @Override
+  public String visitRepeat(RepeatContext ctx) {
+    var repeats = visit(ctx.repeatInstructions());
+    System.out.println("repeats: " + repeats);
+    for (int i = 0; i < Integer.parseInt((java.lang.String) repeats); i++) {
+      visit(ctx.instructions2());
+    }
+    return super.visitRepeat(ctx);
+  }
+
   @Override
   public String visitSingleIncrease(SingleIncreaseContext ctx) {
     String stitchType = (String) ctx.STITCHTYPE().getText();
@@ -222,7 +212,6 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
       ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
       int parentStitchNum =
           (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraStitchCounter;
-      //System.out.println("thisStitchNum " + thisStitchNum + " parentStitchNum: " + parentStitchNum);
       parentStitches.add(new StitchLoc(prevRow.getRowNum(), parentStitchNum));
       Stitch stitch1 = StitchBuilder.buildStitch((java.lang.String) stitchType, Attachment.INTO,
           parentStitches,
@@ -274,37 +263,8 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     return super.visitDecrease(ctx);
   }
 
+
   //
-//  @Override
-//  public String visitRepeatMarker(RepeatMarkerContext ctx) {
-//    return super.visitRepeatMarker(ctx);
-//  }
-//
-//  @Override
-//  public String visitSkipInstr(SkipInstrContext ctx) {
-//    return super.visitSkipInstr(ctx);
-//  }
-//
-//  @Override
-//  public String visitFinalTurnInstr(FinalTurnInstrContext ctx) {
-//    return super.visitFinalTurnInstr(ctx);
-//  }
-//
-//  @Override
-//  public String visitTimesRepeat(TimesRepeatContext ctx) {
-//    return super.visitTimesRepeat(ctx);
-//  }
-//
-//  @Override
-//  public String visitToLastRepeat(ToLastRepeatContext ctx) {
-//    return super.visitToLastRepeat(ctx);
-//  }
-//
-//  @Override
-//  public String visitRepeat(RepeatContext ctx) {
-//    return super.visitRepeat(ctx);
-//  }
-//
   @Override
   public String visitSkip(SkipContext ctx) {
     if (ctx.INT() != null) {
@@ -322,28 +282,7 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     return super.visitSkip(ctx);
   }
 
-  //
-//  @Override
-//  public String visitInNextDir(InNextDirContext ctx) {
-//
-//    return super.visitInNextDir(ctx);
-//  }
-//
-//  @Override
-//  public String visitInEachDir(InEachDirContext ctx) {
-//    return super.visitInEachDir(ctx);
-//  }
-//
-//  @Override
-//  public String visitInFirstDir(InFirstDirContext ctx) {
-//    return super.visitInFirstDir(ctx);
-//  }
-//
-//  @Override
-//  public String visitInLastDir(InLastDirContext ctx) {
-//    return super.visitInLastDir(ctx);
-//  }
-//
+
   @Override
   public String visitInChainInstr(InChainInstrContext ctx) {
     String chain = (String) visit(ctx.inChain()).toString();
@@ -369,27 +308,6 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     return super.visitInChainInstr(ctx);
   }
 
-  //
-//  @Override
-//  public String visitInNext(InNextContext ctx) {
-//    return super.visitInNext(ctx);
-//  }
-//
-//  @Override
-//  public String visitInEach(InEachContext ctx) {
-//    return super.visitInEach(ctx);
-//  }
-//
-//  @Override
-//  public String visitInFirst(InFirstContext ctx) {
-//    return super.visitInFirst(ctx);
-//  }
-//
-//  @Override
-//  public String visitInLast(InLastContext ctx) {
-//    return super.visitInLast(ctx);
-//  }
-//
   @Override
   public String visitInChain1(InChain1Context ctx) {
     return (String) "1";
@@ -465,8 +383,4 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     return (String) ctx.getText();
   }
 
-  @Override
-  public String visitRepeatTimes(RepeatTimesContext ctx) {
-    return super.visitRepeatTimes(ctx);
-  }
 }

@@ -413,4 +413,23 @@ class ParseTests {
 
   }
 
+  @Test
+  void repeatTest() {
+    CharStream input = CharStreams.fromString("10 dc");
+    CrochetPatternParserLexer lexer = new CrochetPatternParserLexer(input);
+    CrochetPatternParserParser parser = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer));
+    ParseTree tree = parser.instructions();
+    visitor.visit(tree);
+    CharStream input2 = CharStreams.fromString(
+        "*1 dc, 1 tr* repeat from * to * 3 times");
+    CrochetPatternParserLexer lexer2 = new CrochetPatternParserLexer(input2);
+    CrochetPatternParserParser parser2 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer2));
+    ParseTree tree2 = parser2.instructions();
+    visitor.visit(tree2);
+    System.out.println(pattern);
+
+  }
+
 }
