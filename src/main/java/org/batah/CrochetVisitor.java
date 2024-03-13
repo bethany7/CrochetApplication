@@ -15,9 +15,7 @@ import org.batah.CrochetPatternParserParser.InChainNContext;
 import org.batah.CrochetPatternParserParser.InstructionsContext;
 import org.batah.CrochetPatternParserParser.NIncreasesContext;
 import org.batah.CrochetPatternParserParser.RepeatContext;
-import org.batah.CrochetPatternParserParser.RepeatMarkerContext;
 import org.batah.CrochetPatternParserParser.RepeatTimesContext;
-import org.batah.CrochetPatternParserParser.ShortTimesRepeatContext;
 import org.batah.CrochetPatternParserParser.SingleIncreaseContext;
 import org.batah.CrochetPatternParserParser.SkipContext;
 import org.batah.CrochetPatternParserParser.SlipStitchContext;
@@ -25,7 +23,6 @@ import org.batah.CrochetPatternParserParser.StitchDirectionInstrContext;
 import org.batah.CrochetPatternParserParser.StitchInstrContext;
 import org.batah.CrochetPatternParserParser.StitchTypeContext;
 import org.batah.CrochetPatternParserParser.StitchesContext;
-import org.batah.CrochetPatternParserParser.TimesRepeatContext;
 import org.batah.model.Pattern;
 import org.batah.model.Row;
 import org.batah.model.stitches.Chain;
@@ -132,23 +129,6 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
   }
 
   @Override
-  public String visitRepeatMarker(RepeatMarkerContext ctx) {
-
-    return super.visitRepeatMarker(ctx);
-  }
-
-  @Override
-  public String visitTimesRepeat(TimesRepeatContext ctx) {
-
-    return super.visitTimesRepeat(ctx);
-  }
-
-  @Override
-  public String visitShortTimesRepeat(ShortTimesRepeatContext ctx) {
-    return super.visitShortTimesRepeat(ctx);
-  }
-
-  @Override
   public String visitRepeatTimes(RepeatTimesContext ctx) {
     if (ctx.INT() != null) {
       var times = ctx.INT().getText();
@@ -162,7 +142,6 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
   @Override
   public String visitRepeat(RepeatContext ctx) {
     var repeats = visit(ctx.repeatInstructions());
-    System.out.println("repeats: " + repeats);
     for (int i = 0; i < Integer.parseInt((java.lang.String) repeats); i++) {
       visit(ctx.instructions2());
     }

@@ -428,8 +428,12 @@ class ParseTests {
         new CommonTokenStream(lexer2));
     ParseTree tree2 = parser2.instructions();
     visitor.visit(tree2);
-    System.out.println(pattern);
-
+    assertEquals(3, pattern.getRowCount());
+    assertEquals(8, pattern.getRow(3).getStitchCount());
+    assertEquals("DoubleCrochet", pattern.getRow(3).getStitch(0).getStitchName());
+    assertEquals("TrebleCrochet", pattern.getRow(3).getStitch(1).getStitchName());
+    assertEquals("DoubleCrochet", pattern.getRow(3).getStitch(2).getStitchName());
+    assertEquals("TrebleCrochet", pattern.getRow(3).getStitch(3).getStitchName());
   }
 
 }
