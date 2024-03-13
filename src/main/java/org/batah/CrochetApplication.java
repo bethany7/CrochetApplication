@@ -79,29 +79,29 @@ public class CrochetApplication extends Application {
     ParseTree tree = parser.instructions(); // begin parsing at instruction rule
 //    System.out.println(tree.toStringTree(parser)); // print LISP-style
 
-    CharStream input2 = CharStreams.fromString("5dc, 5 tr");
+    CharStream input2 = CharStreams.fromString("10 tr");
     CrochetPatternParserLexer lexer2 = new CrochetPatternParserLexer(input2);
     CrochetPatternParserParser parser2 = new CrochetPatternParserParser(
         new CommonTokenStream(lexer2));
     ParseTree tree2 = parser2.instructions(); // begin parsing at instruction rule
 
-    CharStream input3 = CharStreams.fromString("5 dtr, ch 1, 4 tr");
+    CharStream input3 = CharStreams.fromString("5 tr");
     CrochetPatternParserLexer lexer3 = new CrochetPatternParserLexer(input3);
     CrochetPatternParserParser parser3 = new CrochetPatternParserParser(
         new CommonTokenStream(lexer3));
     ParseTree tree3 = parser3.instructions(); // begin parsing at instruction rule
-
-    CharStream input4 = CharStreams.fromString("6 dtr");
-    CrochetPatternParserLexer lexer4 = new CrochetPatternParserLexer(input4);
-    CrochetPatternParserParser parser4 = new CrochetPatternParserParser(
-        new CommonTokenStream(lexer4));
-    ParseTree tree4 = parser4.instructions(); // begin parsing at instruction rule
+//
+//    CharStream input4 = CharStreams.fromString("6 dtr");
+//    CrochetPatternParserLexer lexer4 = new CrochetPatternParserLexer(input4);
+//    CrochetPatternParserParser parser4 = new CrochetPatternParserParser(
+//        new CommonTokenStream(lexer4));
+//    ParseTree tree4 = parser4.instructions(); // begin parsing at instruction rule
 
     CrochetVisitor<String> eval = new CrochetVisitor<String>(pattern);
     eval.visit(tree);
     eval.visit(tree2);
     eval.visit(tree3);
-    eval.visit(tree4);
+    //eval.visit(tree4);
 
     Platform.runLater(() -> {
       PatternCanvas patternCanvas = new PatternCanvas(pattern, graphicalView);

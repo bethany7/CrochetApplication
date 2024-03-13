@@ -46,60 +46,18 @@ class InteractionTests {
     assertEquals("DoubleCrochet", pattern2.getRow(2).getStitch(0).getStitchName());
   }
 
-//  @Test
-//  void TestSimpleSort() {
-//    CharStream input = CharStreams.fromString("10 dc");
-//    CrochetPatternParserLexer lexer = new CrochetPatternParserLexer(input);
-//    CrochetPatternParserParser parser = new CrochetPatternParserParser(
-//        new CommonTokenStream(lexer));
-//    ParseTree tree = parser.instructions();
-//    visitor.visit(tree);
-//    System.out.println(pattern);
-//    var x = pattern.getRow(2).getStitch(0);
-//    System.out.println(x);
-//    assertEquals(2, x.getLoc().getRowNum());
-//    assertEquals(1, x.getLoc().getStitchNum());
-//    var newParentStitches = new ArrayList<StitchLoc>();
-//    var newParent = pattern.getRow(1).getStitch(0).getLoc();
-//    newParentStitches.add(newParent);
-//    x.getParentStitches().clear();
-//    x.setParentStitches(newParentStitches);
-//    System.out.println(x);
-//    pattern.sortRowOnParentStitchNum(pattern.getRow(2));
-//    System.out.println(pattern);
-//    assertEquals(1, x.getParentStitch(0).getRowNum());
-//    assertEquals(1, x.getParentStitch(0).getStitchNum());
-//  }
+  @Test
+  void TestSimpleSort() throws IOException, ClassNotFoundException {
+    Pattern pattern2 = (Pattern) SerializationUtil.deserialize("pattern.ser");
+    System.out.println(pattern2);
+//    assertEquals(3, pattern2.getRowCount());
+//    assertEquals("TrebleCrochet", pattern2.getRow(2).getStitch(5).getStitchName());
+//    assertEquals(1, pattern2.getRow(2).getStitch(5).getParentStitch(0).getRowNum());
+//    assertEquals(5, pattern2.getRow(2).getStitch(5).getParentStitch(0).getStitchNum());
+    Pattern pattern3 = (Pattern) SerializationUtil.deserialize("pattern2.ser");
+    System.out.println(pattern3);
+    //assertEquals(2, pattern3.getRow(2).getStitch(5).getParentStitch(0).getRowNum());
+    //assertEquals(7, pattern3.getRow(2).getStitch(5).getParentStitch(0).getStitchNum());
 
-//  @Test
-//  void sortTest() {
-//    CharStream input = CharStreams.fromString("9 dc");
-//    CrochetPatternParserLexer lexer = new CrochetPatternParserLexer(input);
-//    CrochetPatternParserParser parser = new CrochetPatternParserParser(
-//        new CommonTokenStream(lexer));
-//    ParseTree tree = parser.instructions();
-//    visitor.visit(tree);
-//    CharStream input2 = CharStreams.fromString("5 tr");
-//    CrochetPatternParserLexer lexer2 = new CrochetPatternParserLexer(input2);
-//    CrochetPatternParserParser parser2 = new CrochetPatternParserParser(
-//        new CommonTokenStream(lexer2));
-//    ParseTree tree2 = parser2.instructions();
-//    visitor.visit(tree2);
-//    var x = pattern.getRow(3).getStitch(0);
-//    System.out.println(x);
-//    assertEquals(3, x.getLoc().getRowNum());
-//    assertEquals(2, x.getParentStitch(0).getRowNum());
-//    assertEquals(9, x.getParentStitch(0).getStitchNum());
-//    var pStitches = new ArrayList<StitchLoc>();
-//    var pStitch = new StitchLoc(1, 5);
-//    pStitches.add(pStitch);
-//    x.setParentStitches(pStitches);
-//    assertEquals(1, x.getParentStitch(0).getRowNum());
-//    assertEquals(5, x.getParentStitch(0).getStitchNum());
-////    pattern.sortStitches();
-////    System.out.println(x);
-////    assertEquals(2, x.getLoc().getRowNum());
-//
-//  }
-
+  }
 }

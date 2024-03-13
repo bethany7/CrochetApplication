@@ -12,20 +12,29 @@ public class RowBounds implements Serializable {
   int rowNum;
   Pattern pattern;
 
+
   public RowBounds(Pattern pattern, int rowNum) {
     this.stitchBounds = new ArrayList<>();
     this.rowNum = rowNum;
     this.pattern = pattern;
   }
-public String toString() {
+
+  public String toString() {
     return "" + stitchBounds;
   }
+
   public void addStitchAndBounds(Stitch stitch, SerializableBounds bounds) {
     stitchBounds.add(new StitchBounds(stitch, bounds));
   }
-public void addStitchBounds(StitchBounds stitchBounds) {
+
+  public void addStitchBounds(StitchBounds stitchBounds) {
     this.stitchBounds.add(stitchBounds);
   }
+
+  public void removeStitchBounds(StitchBounds stitchBounds) {
+    this.stitchBounds.remove(stitchBounds);
+  }
+
 
   public ArrayList<StitchBounds> getStitchBoundsList() {
     return stitchBounds;

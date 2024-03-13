@@ -12,6 +12,7 @@ import org.batah.model.Pattern;
 import org.batah.model.Row;
 import org.batah.model.RowBounds;
 import org.batah.model.StitchBounds;
+import org.batah.model.stitches.StitchLoc;
 
 public class PatternCanvas extends Pane {
 
@@ -31,7 +32,6 @@ public class PatternCanvas extends Pane {
   public PatternCanvas(Pattern pattern, GraphicalView graphicalView) {
     this.pattern = pattern;
     this.graphicalView = graphicalView;
-    //this.patternBounds = new PatternBounds(pattern);
   }
 
   public void drawPattern(int width, int height) {
@@ -47,22 +47,23 @@ public class PatternCanvas extends Pane {
 
     for (int i = 2; i <= rowCount; i++) {
       var row = pattern.getRow(i);
-      drawRow(row);
+      var rowBounds = drawRow(row);
+      pattern.addRowBounds(rowBounds);
     }
 
     try {
-      SerializationUtil.serialize(pattern, "pattern.ser");
+      SerializationUtil.serialize(pattern, "pattern2.ser");
     } catch (IOException e) {
       e.printStackTrace();
     }
 
-    try {
-      Pattern pattern2 = (Pattern) SerializationUtil.deserialize("pattern.ser");
-      System.out.println("pattern object: " + pattern);
-      System.out.println("Deserialized pattern object: " + pattern2);
-    } catch (ClassNotFoundException | IOException e) {
-      e.printStackTrace();
-    }
+//    try {
+//      Pattern pattern2 = (Pattern) SerializationUtil.deserialize("pattern.ser");
+//      System.out.println("pattern object: " + pattern);
+//      System.out.println("Deserialized pattern object: " + pattern2);
+//    } catch (ClassNotFoundException | IOException e) {
+//      e.printStackTrace();
+//    }
 
   }
 
@@ -110,7 +111,7 @@ public class PatternCanvas extends Pane {
 
   }
 
-  public void drawRow(Row row) {
+  public RowBounds drawRow(Row row) {
 
     RowBounds rowBounds = new RowBounds(pattern, row.getRowNum());
 
@@ -198,6 +199,7 @@ public class PatternCanvas extends Pane {
         moveHandle.getStyleClass().add("move-handle");
         graphicalView.patternPane.getChildren().add(moveHandle);
         selected = true;
+
         moveHandle.setOnMouseDragged(e2 -> {
           var offsetX = e2.getX();
           var offsetY = e2.getY();
@@ -209,6 +211,8 @@ public class PatternCanvas extends Pane {
           moveHandle.setY(stitchPath.getBoundsInParent().getMaxY() - 10);
 
           var allCoords = pattern.getAllAttachmentCoords();
+          allCoords.remove(stitchBounds.getAttachmentCoords());
+
           for (Coords coords : allCoords) {
             if (stitchPath.getBoundsInParent().intersects(coords.getX(), coords.getY(), 1, 1)) {
               var offsetX2 =
@@ -216,26 +220,46 @@ public class PatternCanvas extends Pane {
                       - (stitch.getDefaultStitchWidth() * scaleX / 2);
               var offsetY2 =
                   coords.getY()
-                      - (stitch.getDefaultStitchHeight() * scaleY);
+                      - (stitch.getDefaultStitchHeight() * scaleY) - (5 * scaleY);
 
               stitchPath.relocate(offsetX2, offsetY2);
               border.relocate(offsetX2, offsetY2);
               moveHandle.setX(stitchPath.getBoundsInParent().getMaxX() - 10);
               moveHandle.setY(stitchPath.getBoundsInParent().getMaxY() - 10);
 
-              stitch.getParentStitches().clear();
-              stitch.getParentStitches().add(
-                  pattern.getStitchLocByAttachmentCoords(coords));
+              moveHandle.setOnMouseReleased(e3 -> {
+                System.out.println(stitch.getParentStitches());
+                stitch.getParentStitches().clear();
+                stitch.getParentStitches().add(
+                    pattern.getStitchLocByAttachmentCoords(coords));
+
+                // NOT WORKING
+                System.out.println(stitch.getParentStitches());
+
+                pattern.removeRowBounds(rowBounds);
+                rowBounds.removeStitchBounds(stitchBounds);
+                StitchBounds newStitchBounds = new StitchBounds(stitch, new SerializableBounds(
+                    stitchPath.getBoundsInParent().getMinX(),
+                    stitchPath.getBoundsInParent().getMinY(),
+                    stitchPath.getBoundsInParent().getWidth(),
+                    stitchPath.getBoundsInParent().getHeight()));
+                System.out.println(newStitchBounds);
+                rowBounds.addStitchBounds(newStitchBounds);
+                pattern.addRowBounds(rowBounds);
+
+              });
+
             }
+
           }
 
         });
 
+
       });
 
-
     }
-    pattern.addRowBounds(rowBounds);
+    return rowBounds;
   }
 
 }

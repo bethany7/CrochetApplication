@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import org.batah.model.stitches.Stitch;
 import org.batah.model.stitches.Stitch.Attachment;
@@ -22,11 +23,6 @@ public class Pattern implements Serializable {
   public Pattern() {
     this.pattern = new ArrayList<>();
     this.rowBoundsList = new ArrayList<>();
-  }
-
-  public Pattern(Pattern pattern, ArrayList<RowBounds> rowBoundsList) {
-    this.pattern = new ArrayList<>();
-    this.rowBoundsList = rowBoundsList;
   }
 
 
@@ -69,6 +65,10 @@ public class Pattern implements Serializable {
     this.rowBoundsList.add(rowBounds);
   }
 
+  public void removeRowBounds(RowBounds rowBounds) {
+    this.rowBoundsList.remove(rowBounds);
+  }
+
   public ArrayList<RowBounds> getRowBoundsList() {
     return rowBoundsList;
   }
@@ -102,14 +102,34 @@ public class Pattern implements Serializable {
   public StitchLoc getStitchLocByAttachmentCoords(Coords coords) {
     for (RowBounds rowBounds : rowBoundsList) {
       for (StitchBounds stitchBounds : rowBounds.getStitchBoundsList()) {
-        if (stitchBounds.getAttachmentCoords().equals(coords)) {
+        if (stitchBounds.getAttachmentCoords().toString().equals(coords.toString())) {
           return stitchBounds.getStitch().getLoc();
         }
       }
     }
     return null;
-
   }
 
+  public void correctRows() {
+    for (Row row : pattern) {
+      for (Stitch stitch : row.getStitches()) {
+        if (stitch.getLoc().getRowNum() != row.getRowNum()) {
+          Row rightRow = pattern.get(stitch.getLoc().getRowNum());
+          rightRow.addStitch(rightRow, stitch);
+          row.removeStitch(row, stitch);
+        }
+      }
+    }
+  }
 
+  public void sortByBounds() {
+    for (RowBounds rowBounds : rowBoundsList) {
+      rowBounds.getStitchBoundsList().sort(new Comparator<StitchBounds>() {
+        @Override
+        public int compare(StitchBounds o1, StitchBounds o2) {
+          return (int) (o1.getBounds().getMinX() - o2.getBounds().getMinX());
+        }
+      });
+    }
+  }
 }

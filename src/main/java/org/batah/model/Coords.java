@@ -1,6 +1,7 @@
 package org.batah.model;
 
-public class Coords implements java.io.Serializable{
+public class Coords implements java.io.Serializable {
+
   private double x;
   private double y;
 
@@ -22,4 +23,15 @@ public class Coords implements java.io.Serializable{
     return y;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (obj == null || obj.getClass() != this.getClass()) {
+      return false;
+    }
+    Coords coords = (Coords) obj;
+    return x == coords.x && y == coords.y;
+  }
 }
