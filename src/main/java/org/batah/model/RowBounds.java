@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javafx.geometry.Bounds;
 import org.batah.SerializableBounds;
 import org.batah.model.stitches.Stitch;
+import org.batah.model.stitches.StitchLoc;
 
 public class RowBounds implements Serializable {
 
@@ -12,11 +13,14 @@ public class RowBounds implements Serializable {
   int rowNum;
   Pattern pattern;
 
+  Row row;
 
-  public RowBounds(Pattern pattern, int rowNum) {
+
+  public RowBounds(Pattern pattern, int rowNum, Row row) {
     this.stitchBounds = new ArrayList<>();
     this.rowNum = rowNum;
     this.pattern = pattern;
+    this.row = row;
   }
 
   public String toString() {
@@ -54,6 +58,17 @@ public class RowBounds implements Serializable {
 
   public int getRowNum() {
     return rowNum;
+  }
+
+  public Row getRow() {
+    return row;
+  }
+
+  public void updateRow(Row row) {
+    row.clearRow();
+    for (StitchBounds stitchBound : stitchBounds) {
+      row.addStitch(stitchBound.getStitch());
+    }
   }
 
   public Coords getStitchAttachmentCoords(int i) {

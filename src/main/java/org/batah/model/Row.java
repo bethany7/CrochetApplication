@@ -4,10 +4,7 @@ import static java.util.Collections.reverseOrder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import org.batah.model.stitches.Stitch;
-import org.batah.model.stitches.StitchLoc;
-import org.javatuples.Triplet;
 
 public class Row implements Serializable {
 
@@ -19,7 +16,7 @@ public class Row implements Serializable {
 
   public Row(Pattern pattern) {
     this.stitches = new ArrayList<>();
-    this.rowNum = pattern.pattern.isEmpty() ? 1 : pattern.pattern.size() + 1;
+    this.rowNum = pattern.rowList.isEmpty() ? 1 : pattern.rowList.size() + 1;
     //this.row = new Triplet<>(rowNum, 0, stitches);
     this.pattern = pattern;
   }
@@ -29,8 +26,8 @@ public class Row implements Serializable {
     return stitches.toString();
   }
 
-  public void addStitch(Row row, Stitch stitch) {
-    row.stitches.add(stitch);
+  public void addStitch(Stitch stitch) {
+    this.stitches.add(stitch);
   }
 
   public int getRowNum() {
@@ -53,8 +50,12 @@ public class Row implements Serializable {
     return pattern;
   }
 
-  public void removeStitch(Row row, Stitch stitch) {
-    row.stitches.remove(stitch);
+  public void removeStitch(Stitch stitch) {
+    this.stitches.remove(stitch);
+  }
+
+  public void clearRow() {
+    stitches.clear();
   }
 
 //  public void sortStitchesOnParentStitchNum() {

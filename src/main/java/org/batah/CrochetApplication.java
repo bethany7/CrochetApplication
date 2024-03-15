@@ -85,7 +85,7 @@ public class CrochetApplication extends Application {
         new CommonTokenStream(lexer2));
     ParseTree tree2 = parser2.instructions(); // begin parsing at instruction rule
 
-    CharStream input3 = CharStreams.fromString("5 tr");
+    CharStream input3 = CharStreams.fromString("3 dc");
     CrochetPatternParserLexer lexer3 = new CrochetPatternParserLexer(input3);
     CrochetPatternParserParser parser3 = new CrochetPatternParserParser(
         new CommonTokenStream(lexer3));
@@ -101,7 +101,7 @@ public class CrochetApplication extends Application {
     eval.visit(tree);
     eval.visit(tree2);
     eval.visit(tree3);
-    //eval.visit(tree4);
+//    eval.visit(tree4);
 
     Platform.runLater(() -> {
       PatternCanvas patternCanvas = new PatternCanvas(pattern, graphicalView);

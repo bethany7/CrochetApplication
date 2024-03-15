@@ -1,27 +1,22 @@
 package org.batah.model;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import org.batah.model.stitches.Stitch;
-import org.batah.model.stitches.Stitch.Attachment;
 import org.batah.model.stitches.StitchLoc;
 
 public class Pattern implements Serializable {
 
-  ArrayList<Row> pattern;
+  ArrayList<Row> rowList;
   ArrayList<RowBounds> rowBoundsList;
 
   private static final long serialVersionUID = 1L;
 
 
   public Pattern() {
-    this.pattern = new ArrayList<>();
+    this.rowList = new ArrayList<>();
     this.rowBoundsList = new ArrayList<>();
   }
 
@@ -29,31 +24,32 @@ public class Pattern implements Serializable {
   @Override
   public String toString() {
     if (rowBoundsList.isEmpty()) {
-      return "" + pattern;
+      return "" + rowList;
     } else {
       return "" + rowBoundsList;
     }
   }
 
-  public ArrayList<Row> getPattern() {
-    return pattern;
+
+  public ArrayList<Row> getRowList() {
+    return rowList;
   }
 
   public int getRowCount() {
-    return pattern.size();
+    return rowList.size();
   }
 
   public Row getRow(int rowNum) {
-    return pattern.get(rowNum - 1);
+    return rowList.get(rowNum - 1);
   }
 
   public void addRow(Row row) {
-    pattern.add(row);
+    rowList.add(row);
   }
 
   public int getMaxStitchCount() {
     int maxStitchCount = 0;
-    for (Row row : pattern) {
+    for (Row row : rowList) {
       if (row.getStitchCount() > maxStitchCount) {
         maxStitchCount = row.getStitchCount();
       }
@@ -110,17 +106,55 @@ public class Pattern implements Serializable {
     return null;
   }
 
-  public void correctRows() {
-    for (Row row : pattern) {
-      for (Stitch stitch : row.getStitches()) {
-        if (stitch.getLoc().getRowNum() != row.getRowNum()) {
-          Row rightRow = pattern.get(stitch.getLoc().getRowNum());
-          rightRow.addStitch(rightRow, stitch);
-          row.removeStitch(row, stitch);
+
+  public void updateStitchRow() {
+    List<RowBounds> toBeModified = new ArrayList<>();
+    for (RowBounds rowBounds : new ArrayList<>(rowBoundsList)) {
+      for (StitchBounds stitchBounds : new ArrayList<>(rowBounds.getStitchBoundsList())) {
+        if (stitchBounds.getStitch().getLoc().getRowNum()
+            != stitchBounds.getStitch().getParentStitch(0).getRowNum() + 1) {
+          stitchBounds.getStitch().setLoc(
+              new StitchLoc(stitchBounds.getStitch().getParentStitch(0).getRowNum() + 1,
+                  stitchBounds.getStitch().getLoc().getStitchNum()));
+        }
+        if (stitchBounds.getStitch().getLoc().getRowNum() != rowBounds.getRowNum()) {
+          toBeModified.add(rowBounds);
         }
       }
     }
+
+    for (RowBounds rowBounds : toBeModified) {
+      for (StitchBounds stitchBounds : new ArrayList<>(rowBounds.getStitchBoundsList())) {
+        int correctRowNum = stitchBounds.getStitch().getLoc().getRowNum();
+        if (correctRowNum < this.getRowCount()) {
+          RowBounds correctRowBounds = rowBoundsList.get(correctRowNum - 1);
+          rowBoundsList.remove(rowBounds);
+          rowBounds.removeStitchBounds(stitchBounds);
+          rowBoundsList.add(rowBounds);
+          rowBoundsList.remove(correctRowBounds);
+          correctRowBounds.addStitchBounds(stitchBounds);
+          rowBoundsList.add(correctRowBounds);
+        }
+      }
+
+    }
+
+    sortByRow();
+    updatePattern();
   }
+
+  public void sortByRow() {
+    rowBoundsList.sort(new Comparator<RowBounds>() {
+      @Override
+      public int compare(RowBounds o1, RowBounds o2) {
+        return o1.getRow().getRowNum() - o2.getRow().getRowNum();
+      }
+    });
+    updatePattern();
+  }
+
+  // sort row so that stitches are in order of their x-coordinates
+
 
   public void sortByBounds() {
     for (RowBounds rowBounds : rowBoundsList) {
@@ -130,6 +164,34 @@ public class Pattern implements Serializable {
           return (int) (o1.getBounds().getMinX() - o2.getBounds().getMinX());
         }
       });
+      rowBounds.updateRow(rowBounds.getRow());
+    }
+    updatePattern();
+  }
+
+  public void updateStitchLocation() {
+    for (RowBounds rowBounds : rowBoundsList) {
+      Row row = rowBounds.getRow();
+      //odd rows
+      if (row.getRowNum() % 2 != 0) {
+        for (int i = 0; i < row.getStitchCount(); i++) {
+          row.getStitch(i).setLoc(new StitchLoc(row.getRowNum(), i + 1));
+        }
+      } else {
+        for (int i = 0; i < row.getStitchCount(); i++) {
+          row.getStitch(i).setLoc(new StitchLoc(row.getRowNum(), row.getStitchCount() - i));
+        }
+      }
+      rowBounds.updateRow(row);
+    }
+    updatePattern();
+  }
+
+  public void updatePattern() {
+    rowList.clear();
+    for (RowBounds rowBounds : rowBoundsList) {
+      rowList.add(rowBounds.getRow());
     }
   }
+
 }

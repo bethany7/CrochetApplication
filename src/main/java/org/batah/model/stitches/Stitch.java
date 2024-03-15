@@ -88,14 +88,6 @@ public abstract class Stitch implements Serializable {
     return this.defaultStitchWidth;
   }
 
-  public void redoLoc() {
-    if (this.loc.getRowNum() != this.getParentStitch(0).getRowNum() + 1) {
-      StitchLoc newLoc = new StitchLoc(this.getParentStitch(0).getRowNum() + 1,
-          this.loc.getStitchNum());
-      this.setLoc(newLoc);
-    }
-  }
-
   public int getFirstParentStitchNum() {
     return this.getParentStitch(0).getStitchNum();
   }

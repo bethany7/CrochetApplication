@@ -89,7 +89,7 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
       parentStitches.add(new StitchLoc(prevRow.getRowNum(), parentStitchNum));
       Stitch stitch = StitchBuilder.buildStitch((java.lang.String) newStitchType, Attachment.INTO,
           parentStitches, new StitchLoc(row.getRowNum(), row.getStitchCount() + 1), row);
-      row.addStitch(row, stitch);
+      row.addStitch(stitch);
     }
     return super.visitStitchDirectionInstr(ctx);
   }
@@ -109,7 +109,7 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
       parentStitches.add(new StitchLoc(prevRow.getRowNum(), parentStitchNum));
       Stitch stitch = StitchBuilder.buildStitch((java.lang.String) x, Attachment.INTO,
           parentStitches, new StitchLoc(row.getRowNum(), row.getStitchCount() + 1), row);
-      row.addStitch(row, stitch);
+      row.addStitch(stitch);
     } else {
       int i = Integer.parseInt((java.lang.String) parts[0]);
       String y = parts[1];
@@ -122,7 +122,7 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
         Stitch stitch = StitchBuilder.buildStitch((java.lang.String) y, Attachment.INTO,
             parentStitches, new StitchLoc(row.getRowNum(), thisStitchNum),
             row);
-        row.addStitch(row, stitch);
+        row.addStitch(stitch);
       }
     }
     return super.visitStitchInstr(ctx);
@@ -161,13 +161,13 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
 
     Stitch stitch1 = StitchBuilder.buildStitch((java.lang.String) stitchType, Attachment.INTO,
         parentStitches, new StitchLoc(row.getRowNum(), row.getStitchCount() + 1), row);
-    row.addStitch(row, stitch1);
+    row.addStitch(stitch1);
 
     for (int k = 1; k < incNum; k++) {
       StitchLoc thisStitch = new StitchLoc(row.getRowNum(), row.getStitchCount() + 1);
       Stitch stitchX = StitchBuilder.buildStitch((java.lang.String) stitchType,
           Attachment.INTO, parentStitches, thisStitch, row);
-      row.addStitch(row, stitchX);
+      row.addStitch(stitchX);
       extraStitchCounter++;
     }
     return super.visitSingleIncrease(ctx);
@@ -195,13 +195,13 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
       Stitch stitch1 = StitchBuilder.buildStitch((java.lang.String) stitchType, Attachment.INTO,
           parentStitches,
           new StitchLoc(row.getRowNum(), thisStitchNum), row);
-      row.addStitch(row, stitch1);
+      row.addStitch(stitch1);
 
       for (int k = 1; k < incNum; k++) {
         StitchLoc thisStitch = new StitchLoc(row.getRowNum(), row.getStitchCount() + 1);
         Stitch stitchX = StitchBuilder.buildStitch((java.lang.String) stitchType,
             Attachment.INTO, parentStitches, thisStitch, row);
-        row.addStitch(row, stitchX);
+        row.addStitch(stitchX);
         extraStitchCounter++;
       }
     }
@@ -237,7 +237,7 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
       }
       Stitch stitch = StitchBuilder.buildStitch((java.lang.String) stitchType, Attachment.INTO,
           parentStitches, new StitchLoc(row.getRowNum(), thisStitchNum), row);
-      row.addStitch(row, stitch);
+      row.addStitch(stitch);
     }
     return super.visitDecrease(ctx);
   }
@@ -282,7 +282,7 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     Stitch stitch = StitchBuilder.buildStitch((java.lang.String) stitchType, Attachment.INTO,
         parentStitches, new StitchLoc(row.getRowNum(), 1),
         row);
-    row.addStitch(row, stitch);
+    row.addStitch(stitch);
 
     return super.visitInChainInstr(ctx);
   }
@@ -324,7 +324,7 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
       }
       Chain chain = new Chain(Attachment.NONE, parentStitches,
           new StitchLoc(row.getRowNum(), thisStitchNum), row);
-      row.addStitch(row, chain);
+      row.addStitch(chain);
     }
     return super.visitChain(ctx);
   }

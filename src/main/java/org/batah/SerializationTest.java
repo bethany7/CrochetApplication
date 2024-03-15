@@ -24,7 +24,7 @@ public class SerializationTest {
       Stitch stitch = new Chain(Attachment.NONE, parentStitches1,
           loc,
           row);
-      row.addStitch(row, stitch);
+      row.addStitch(stitch);
     }
 
     pattern.addRow(row);
@@ -36,7 +36,7 @@ public class SerializationTest {
     for (int i = 0; i < 10; i++) {
       Stitch stitch = new DoubleCrochet(Attachment.INTO, parentStitches2,
           new StitchLoc(row2.getRowNum(), i + 1), row2);
-      row2.addStitch(row, stitch);
+      row2.addStitch(stitch);
     }
     pattern.addRow(row2);
 

@@ -12,6 +12,7 @@ import org.batah.model.Pattern;
 public class GraphicalView extends BaseWindow {
 
   Pane patternPane;
+  PatternCanvas patternCanvas;
 
   public GraphicalView(CrochetApplication app, int width, int height, String style) {
     super(app, width, height, style);
@@ -53,6 +54,14 @@ public class GraphicalView extends BaseWindow {
     patternPane.setMaxHeight((height - 250));
     patternPane.getStyleClass().add("patternPane");
     main.setCenter(patternPane);
+
+    var doneButton = new Text("Done");
+    toolbarPane.getChildren().add(doneButton);
+    doneButton.setOnMouseClicked(e -> {
+      patternCanvas.done();
+
+    });
+
 
     // Add Row Pane?
     var addRowPane = new HBox();

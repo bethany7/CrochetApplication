@@ -17,14 +17,12 @@ public class SelectedStitch {
   public SVGPath drawBorderOnSelectedStitch() {
     // Draw a border around the selected stitch
     Bounds bounds = stitchPath.getBoundsInParent();
-    System.out.println("Bounds: " + bounds);
     SVGPath border = new SVGPath();
     border.setContent(
         "M" + (bounds.getMinX() - 2) + " " + (bounds.getMinY() - 2) + " L" + (bounds.getMaxX() + 2)
             + " " + (bounds.getMinY() - 2) + " L" + (bounds.getMaxX() + 2) + " " + (bounds.getMaxY()
             + 2) + " L" + (bounds.getMinX() - 2) + " " + (bounds.getMaxY() + 2) + " Z");
     border.setStyle("-fx-stroke: red; -fx-stroke-width: 1; -fx-fill: none;");
-
     return border;
   }
 
