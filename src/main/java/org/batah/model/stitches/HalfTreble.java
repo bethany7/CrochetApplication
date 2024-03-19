@@ -2,20 +2,19 @@ package org.batah.model.stitches;
 
 import java.util.ArrayList;
 import javafx.scene.shape.SVGPath;
-import org.batah.model.Pattern;
 import org.batah.model.Row;
 
 public class HalfTreble extends Stitch {
 
 
   public HalfTreble(Attachment attachment, ArrayList<StitchLoc> parentStitches, StitchLoc loc,
-      Row row ) {
+      Row row) {
     super(attachment, parentStitches, loc, row);
     this.defaultStitchWidth = 200;
     this.defaultStitchHeight = 280;
   }
 
-//  public HalfTreble(Attachment attachment, Row row) {
+  //  public HalfTreble(Attachment attachment, Row row) {
 //    super(attachment, row);
 //    this.defaultStitchWidth = 200;
 //    this.defaultStitchHeight = 280;

@@ -1,6 +1,5 @@
 package org.batah.ui;
 
-import java.io.IOException;
 import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -8,7 +7,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Scale;
 import org.batah.SerializableBounds;
-import org.batah.SerializationUtil;
 import org.batah.decorators.SelectedStitch;
 import org.batah.model.Coords;
 import org.batah.model.Pattern;
@@ -106,7 +104,8 @@ public class PatternCanvas extends Pane {
 
     for (RowBounds rowBounds : pattern.getRowBoundsList()) {
       offsetX =
-          (pattern.getRowBoundsList().getFirst().getStitch(0).getDefaultStitchWidth() / 2) * scaleX
+          (pattern.getRowBoundsList().getFirst().getStitch(0).getDefaultStitchWidth() / 2)
+              * scaleX
               + 10;
       for (StitchBounds stitchBounds : rowBounds.getStitchBoundsList()) {
         var stitch = stitchBounds.getStitch();
@@ -319,7 +318,8 @@ public class PatternCanvas extends Pane {
     e.consume();
     for (Coords coords : allCoords) {
       if (stitchPath.getBoundsInParent().intersects(coords.getX(), coords.getY(), 1, 1)
-          && pattern.getStitchLocByAttachmentCoords(coords).getRowNum() < pattern.getRowCount()) {
+          && pattern.getStitchLocByAttachmentCoords(coords).getRowNum()
+          < pattern.getRowCount()) {
         var offsetX2 =
             coords.getX()
                 - (stitchPath.getBoundsInParent().getWidth() / 2);

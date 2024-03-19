@@ -2,8 +2,8 @@ package org.batah.model;
 
 public class Coords implements java.io.Serializable {
 
-  private double x;
-  private double y;
+  private final double x;
+  private final double y;
 
   public Coords(double x, double y) {
     this.x = x;
@@ -12,7 +12,7 @@ public class Coords implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return "" + x + "," + y;
+    return x + "," + y;
   }
 
   public double getX() {

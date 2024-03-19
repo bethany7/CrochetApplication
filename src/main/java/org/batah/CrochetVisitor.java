@@ -39,9 +39,18 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
   Row row;
   int skipCounter;
   int extraStitchCounter;
+  String patternStyle;
+  boolean isTurningChainStitch;
+  int turningChainLength;
 
   public CrochetVisitor(Pattern pattern) {
     this.pattern = pattern;
+  }
+
+  public void setParameters(String patternStyle, boolean isTurningChainStitch, int turningChainLength) {
+    this.patternStyle = patternStyle;
+    this.isTurningChainStitch = isTurningChainStitch;
+    this.turningChainLength = turningChainLength;
   }
 
   @Override

@@ -2,10 +2,8 @@ package org.batah.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import javafx.geometry.Bounds;
 import org.batah.SerializableBounds;
 import org.batah.model.stitches.Stitch;
-import org.batah.model.stitches.StitchLoc;
 
 public class RowBounds implements Serializable {
 

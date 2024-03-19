@@ -1,7 +1,5 @@
 package org.batah;
 
-import java.util.Iterator;
-import java.util.ListIterator;
 import org.batah.model.Pattern;
 import org.batah.model.Row;
 import org.batah.model.stitches.Stitch;

@@ -2,8 +2,6 @@ package org.batah.model.stitches;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import javafx.geometry.Bounds;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.SVGPath;
 import org.batah.model.*;
 

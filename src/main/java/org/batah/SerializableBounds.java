@@ -4,10 +4,10 @@ import java.io.Serializable;
 
 public class SerializableBounds implements Serializable {
 
-  private double minX;
-  private double minY;
-  private double width;
-  private double height;
+  private final double minX;
+  private final double minY;
+  private final double width;
+  private final double height;
 
   public SerializableBounds(double minX, double minY, double width, double height) {
     this.minX = minX;

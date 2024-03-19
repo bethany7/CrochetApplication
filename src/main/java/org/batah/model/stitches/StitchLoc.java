@@ -13,7 +13,7 @@ public class StitchLoc implements Serializable {
 
   @Override
   public String toString() {
-    return "" + loc.getValue0() + "," + loc.getValue1();
+    return loc.getValue0() + "," + loc.getValue1();
   }
 
   public Pair<Integer, Integer> getLoc() {

@@ -2,7 +2,6 @@ package org.batah.model.stitches;
 
 import java.util.ArrayList;
 import javafx.scene.shape.SVGPath;
-import org.batah.model.Pattern;
 import org.batah.model.Row;
 
 public class Slip extends Stitch {

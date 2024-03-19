@@ -4,13 +4,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import org.batah.model.stitches.Stitch;
 import org.batah.model.stitches.StitchLoc;
 
 public class Pattern implements Serializable {
 
   ArrayList<Row> rowList;
   ArrayList<RowBounds> rowBoundsList;
+
+  String patternStyle = "Rounds";
+  boolean turningChainIsStitch;
+  int turningChainLength;
 
   private static final long serialVersionUID = 1L;
 
@@ -30,6 +33,29 @@ public class Pattern implements Serializable {
     }
   }
 
+  public String getPatternStyle() {
+    return patternStyle;
+  }
+
+  public void setPatternStyle(String patternStyle) {
+    this.patternStyle = patternStyle;
+  }
+
+  public boolean isTurningChainIsStitch() {
+    return turningChainIsStitch;
+  }
+
+  public void setTurningChainIsStitch(boolean turningChainIsStitch) {
+    this.turningChainIsStitch = turningChainIsStitch;
+  }
+
+  public int getTurningChainLength() {
+    return turningChainLength;
+  }
+
+  public void setTurningChainLength(int turningChainLength) {
+    this.turningChainLength = turningChainLength;
+  }
 
   public ArrayList<Row> getRowList() {
     return rowList;

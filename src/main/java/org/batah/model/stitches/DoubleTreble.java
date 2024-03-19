@@ -2,10 +2,9 @@ package org.batah.model.stitches;
 
 import java.util.ArrayList;
 import javafx.scene.shape.SVGPath;
-import org.batah.model.Pattern;
 import org.batah.model.Row;
 
-public class DoubleTreble extends Stitch{
+public class DoubleTreble extends Stitch {
 
 
   public DoubleTreble(Attachment attachment, ArrayList<StitchLoc> parentStitches, StitchLoc loc,

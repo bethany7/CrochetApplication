@@ -2,7 +2,6 @@ package org.batah.model.stitches;
 
 import java.util.ArrayList;
 import javafx.scene.shape.SVGPath;
-import org.batah.model.Pattern;
 import org.batah.model.Row;
 
 public class TripleTreble extends Stitch {
@@ -14,7 +13,7 @@ public class TripleTreble extends Stitch {
     this.defaultStitchHeight = 360;
   }
 
-//  public TripleTreble(Attachment attachment, Row row) {
+  //  public TripleTreble(Attachment attachment, Row row) {
 //    super(attachment, row);
 //    this.defaultStitchWidth = 200;
 //    this.defaultStitchHeight = 360;
