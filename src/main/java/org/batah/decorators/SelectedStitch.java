@@ -35,7 +35,7 @@ public class SelectedStitch {
     Bounds bounds = stitchPath.getBoundsInParent();
     resizeHandle.setPickOnBounds(true);
     resizeHandle.setX(bounds.getMaxX() - 10);
-    resizeHandle.setY(bounds.getMaxY() - 10);
+    resizeHandle.setY(bounds.getMinY() - 10);
 
     return resizeHandle;
   }

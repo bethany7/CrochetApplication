@@ -43,22 +43,11 @@ class InteractionTests {
   @Test
   void TestSimpleSort() throws IOException, ClassNotFoundException {
     Pattern pattern2 = (Pattern) SerializationUtil.deserialize("pattern.ser");
-    System.out.println(pattern2.getRowList());
-//    assertEquals(3, pattern2.getRowCount());
-//    assertEquals("TrebleCrochet", pattern2.getRow(2).getStitch(5).getStitchName());
-//    assertEquals(1, pattern2.getRow(2).getStitch(5).getParentStitch(0).getRowNum());
-//    assertEquals(5, pattern2.getRow(2).getStitch(5).getParentStitch(0).getStitchNum());
+    pattern2.prettyPrint();
     Pattern pattern3 = (Pattern) SerializationUtil.deserialize("pattern2.ser");
-    System.out.println(pattern3.getRowList());
-    //assertEquals(2, pattern3.getRow(2).getStitch(5).getParentStitch(0).getRowNum());
-    //assertEquals(7, pattern3.getRow(2).getStitch(5).getParentStitch(0).getStitchNum());
-    pattern3.updateStitchRow();
-    System.out.println(pattern3.getRowList());
-    pattern3.sortByBounds();
-    System.out.println(pattern3.getRowList());
-    pattern3.updateStitchLocation();
-    System.out.println(pattern3.getRowList());
-
+    pattern3.updateAll();
+    pattern3.prettyPrint();
+//
     try {
       SerializationUtil.serialize(pattern3, "pattern3.ser");
     } catch (IOException e) {

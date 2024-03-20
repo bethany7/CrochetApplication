@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.batah.model.stitches.Stitch;
 import org.batah.model.stitches.StitchLoc;
 
 public class Pattern implements Serializable {
@@ -132,42 +133,44 @@ public class Pattern implements Serializable {
     return null;
   }
 
-
   public void updateStitchRow() {
-    List<RowBounds> toBeModified = new ArrayList<>();
+    List<StitchBounds> toBeModified = new ArrayList<>();
     for (RowBounds rowBounds : new ArrayList<>(rowBoundsList)) {
       for (StitchBounds stitchBounds : new ArrayList<>(rowBounds.getStitchBoundsList())) {
         if (stitchBounds.getStitch().getLoc().getRowNum()
             != stitchBounds.getStitch().getParentStitch(0).getRowNum() + 1) {
+          rowBoundsList.remove(rowBounds);
+          rowBounds.removeStitchBounds(stitchBounds);
+          rowBounds.getRow().removeStitch(stitchBounds.getStitch());
+          rowBoundsList.add(rowBounds);
+          rowBounds.updateRow(rowBounds.getRow());
+          sortByRow();
           stitchBounds.getStitch().setLoc(
               new StitchLoc(stitchBounds.getStitch().getParentStitch(0).getRowNum() + 1,
                   stitchBounds.getStitch().getLoc().getStitchNum()));
         }
         if (stitchBounds.getStitch().getLoc().getRowNum() != rowBounds.getRowNum()) {
-          toBeModified.add(rowBounds);
+          toBeModified.add(stitchBounds);
         }
       }
     }
+    for (StitchBounds stitchBounds : toBeModified) {
+      int correctRowNum = stitchBounds.getStitch().getLoc().getRowNum();
+      System.out.println(correctRowNum);
+      RowBounds correctRowBounds = rowBoundsList.get(correctRowNum - 1);
+      System.out.println(correctRowBounds);
+      rowBoundsList.remove(correctRowBounds);
+      correctRowBounds.addStitchBounds(stitchBounds);
+      correctRowBounds.updateRow(correctRowBounds.getRow());
 
-    for (RowBounds rowBounds : toBeModified) {
-      for (StitchBounds stitchBounds : new ArrayList<>(rowBounds.getStitchBoundsList())) {
-        int correctRowNum = stitchBounds.getStitch().getLoc().getRowNum();
-        if (correctRowNum < this.getRowCount()) {
-          RowBounds correctRowBounds = rowBoundsList.get(correctRowNum - 1);
-          rowBoundsList.remove(rowBounds);
-          rowBounds.removeStitchBounds(stitchBounds);
-          rowBoundsList.add(rowBounds);
-          rowBoundsList.remove(correctRowBounds);
-          correctRowBounds.addStitchBounds(stitchBounds);
-          rowBoundsList.add(correctRowBounds);
-        }
-      }
+      rowBoundsList.add(correctRowBounds);
 
     }
 
     sortByRow();
     updatePattern();
   }
+
 
   public void sortByRow() {
     rowBoundsList.sort(new Comparator<RowBounds>() {
@@ -180,8 +183,6 @@ public class Pattern implements Serializable {
   }
 
   // sort row so that stitches are in order of their x-coordinates
-
-
   public void sortByBounds() {
     for (RowBounds rowBounds : rowBoundsList) {
       rowBounds.getStitchBoundsList().sort(new Comparator<StitchBounds>() {
@@ -217,6 +218,26 @@ public class Pattern implements Serializable {
     rowList.clear();
     for (RowBounds rowBounds : rowBoundsList) {
       rowList.add(rowBounds.getRow());
+    }
+  }
+
+  public void updateAll() {
+    updateStitchRow();
+    sortByBounds();
+    updateStitchLocation();
+  }
+
+  public void prettyPrint() {
+    System.out.print("Pattern: " + "\n");
+    for (RowBounds rowBounds : rowBoundsList) {
+      System.out.print("Row: " + rowBounds.getRowNum() + "\n");
+      for (StitchBounds stitchBounds : rowBounds.getStitchBoundsList()) {
+        Stitch stitch = stitchBounds.getStitch();
+        System.out.print(
+            "Stitch: " + stitch.getStitchName() + ", Loc: " + stitch.getLoc()
+                + ", Parent0: " + stitch.getParentStitch(0).getLoc() + ", MinX: "
+                + stitchBounds.getBounds().getMinX() + "\n");
+      }
     }
   }
 

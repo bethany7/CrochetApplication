@@ -34,3 +34,11 @@
 .patternPane {
   -fx-background-color: #44d773;
 }
+
+.stitchPalette {
+  -fx-border-color: #a013a4;
+}
+
+.stitchPanel {
+  -fx-border-color: #a013a4;
+}

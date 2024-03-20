@@ -24,9 +24,16 @@ public class CrochetApplication extends Application {
   public void start(Stage stage) {
     this.stage = stage;
     stage.setTitle("Crochet Application");
+    try {
+      pattern = (Pattern) SerializationUtil.deserialize("pattern.ser");
+      System.out.println("pattern object: " + pattern);
+      System.out.println("Deserialized pattern object: " + pattern);
+    } catch (ClassNotFoundException | IOException e) {
+      e.printStackTrace();
+    }
     //openTextView();
-    //openGraphicalView();
-    openStartView();
+    openGraphicalView();
+    //openStartView();
   }
 
   public static void main(String[] args) {
@@ -104,8 +111,9 @@ public class CrochetApplication extends Application {
       PatternCanvas patternCanvas = new PatternCanvas(pattern, graphicalView);
       var patternPaneWidth = graphicalView.getPatternPaneWidth();
       var patternPaneHeight = graphicalView.getPatternPaneHeight();
-      patternCanvas.drawPattern(patternPaneWidth, patternPaneHeight);
-
+      if (pattern != null) {
+        patternCanvas.drawPattern(patternPaneWidth, patternPaneHeight);
+      }
     });
 
 

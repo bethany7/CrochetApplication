@@ -1,12 +1,28 @@
 package org.batah.ui;
 
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.batah.CrochetApplication;
+import org.batah.model.Pattern;
+import org.batah.model.Row;
+import org.batah.model.stitches.Chain;
+import org.batah.model.stitches.DoubleCrochet;
+import org.batah.model.stitches.DoubleTreble;
+import org.batah.model.stitches.HalfTreble;
+import org.batah.model.stitches.Slip;
+import org.batah.model.stitches.Stitch;
+import org.batah.model.stitches.TrebleCrochet;
+import org.batah.model.stitches.TripleTreble;
 
 public class GraphicalView extends BaseWindow {
 
@@ -32,12 +48,21 @@ public class GraphicalView extends BaseWindow {
     toolbarPane.getChildren().add(testText);
 
     // Stitch Panel
-    var stitchPanel = new VBox();
-    stitchPanel.setPrefWidth(300);
-    stitchPanel.getStyleClass().add("stitchPanel");
-    main.setRight(stitchPanel);
-    var testText2 = new Text("Stitches Go Here!");
-    stitchPanel.getChildren().add(testText2);
+//    var stitchPanel = new VBox();
+//    stitchPanel.setPrefWidth(300);
+//    stitchPanel.getStyleClass().add("stitchPanel");
+//    main.setRight(stitchPanel);
+//    var testText2 = new Text("Stitches Go Here!");
+//    stitchPanel.getChildren().add(testText2);
+
+    var stitchPalette = buildStitchPalette();
+    stitchPalette.setPrefWidth(300);
+    stitchPalette.setPrefColumns(2);
+    stitchPalette.setPrefTileHeight(100);
+    stitchPalette.setPrefTileWidth(100);
+    stitchPalette.getStyleClass().add("stitchPalette");
+
+    main.setRight(stitchPalette);
 
     // Settings Pane
     var settingsPane = new VBox();
@@ -61,7 +86,6 @@ public class GraphicalView extends BaseWindow {
 
     });
 
-
     // Add Row Pane?
     var addRowPane = new HBox();
     addRowPane.setPrefHeight(200);
@@ -73,10 +97,31 @@ public class GraphicalView extends BaseWindow {
 
   }
 
-  public void openGraphicalView(Stage stage) {
-    stage.setScene(scene);
-    stage.show();
-    stage.centerOnScreen();
+  public TilePane buildStitchPalette() {
+    TilePane stitchPalette = new TilePane();
+    Pattern pattern = new Pattern();
+    Row row = new Row(pattern);
+    row.addStitch(new Chain(null, null, null, row));
+    row.addStitch(new DoubleCrochet(null, null, null, row));
+    row.addStitch(new DoubleTreble(null, null, null, row));
+    row.addStitch(new HalfTreble(null, null, null, row));
+    row.addStitch(new Slip(null, null, null, row));
+    row.addStitch(new TrebleCrochet(null, null, null, row));
+    row.addStitch(new TripleTreble(null, null, null, row));
+    pattern.addRow(row);
+
+    for (Stitch stitch : row.getStitches()) {
+      var scale = 0.2;
+      SVGPath path = stitch.Draw();
+      path.setScaleX(scale);
+      path.setScaleY(scale);
+      path.setPickOnBounds(true);
+      path.setOnMouseClicked(e -> {
+        patternCanvas.addStitch(stitch);
+      });
+      stitchPalette.getChildren().add(path);
+    }
+    return stitchPalette;
   }
 
   public int getPatternPaneWidth() {
