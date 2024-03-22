@@ -26,6 +26,7 @@ public class SelectedStitch {
     return border;
   }
 
+
   public ImageView drawResizeHandleOnSelectedStitch() {
     ImageView resizeHandle = new ImageView();
     Image resizeHandleImg = new Image("file:src/main/resources/images/resize-expand.png", 20, 20,
