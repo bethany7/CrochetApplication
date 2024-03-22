@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.SequencedCollection;
 import org.batah.model.stitches.Stitch;
 import org.batah.model.stitches.StitchLoc;
 
@@ -156,9 +157,7 @@ public class Pattern implements Serializable {
     }
     for (StitchBounds stitchBounds : toBeModified) {
       int correctRowNum = stitchBounds.getStitch().getLoc().getRowNum();
-      System.out.println(correctRowNum);
       RowBounds correctRowBounds = rowBoundsList.get(correctRowNum - 1);
-      System.out.println(correctRowBounds);
       rowBoundsList.remove(correctRowBounds);
       correctRowBounds.addStitchBounds(stitchBounds);
       correctRowBounds.updateRow(correctRowBounds.getRow());
@@ -198,18 +197,19 @@ public class Pattern implements Serializable {
 
   public void updateStitchLocation() {
     for (RowBounds rowBounds : rowBoundsList) {
-      Row row = rowBounds.getRow();
+      //Row row = rowBounds.getRow();
       //odd rows
-      if (row.getRowNum() % 2 != 0) {
-        for (int i = 0; i < row.getStitchCount(); i++) {
-          row.getStitch(i).setLoc(new StitchLoc(row.getRowNum(), i + 1));
+      if (rowBounds.getRowNum() % 2 != 0) {
+        for (int i = 0; i < rowBounds.getStitchCount(); i++) {
+          rowBounds.getStitch(i).setLoc(new StitchLoc(rowBounds.getRowNum(), i + 1));
         }
       } else {
-        for (int i = 0; i < row.getStitchCount(); i++) {
-          row.getStitch(i).setLoc(new StitchLoc(row.getRowNum(), row.getStitchCount() - i));
+        for (int i = 0; i < rowBounds.getStitchCount(); i++) {
+          rowBounds.getStitch(i)
+              .setLoc(new StitchLoc(rowBounds.getRowNum(), rowBounds.getStitchCount() - i));
         }
       }
-      rowBounds.updateRow(row);
+      rowBounds.updateRow(rowBounds.getRow());
     }
     updatePattern();
   }

@@ -1,9 +1,9 @@
 package org.batah;
 
-import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -57,6 +57,7 @@ public class CrochetApplication extends Application {
   public void openStartView() {
     var startView = new StartView(this, 1920, 1080, "style.css");
     startView.build();
+
     stage.setScene(startView.getScene());
     stage.show();
     stage.centerOnScreen();
@@ -89,12 +90,12 @@ public class CrochetApplication extends Application {
     CrochetPatternParserParser parser2 = new CrochetPatternParserParser(
         new CommonTokenStream(lexer2));
     ParseTree tree2 = parser2.instructions(); // begin parsing at instruction rule
-
-    CharStream input3 = CharStreams.fromString("3 tr");
-    CrochetPatternParserLexer lexer3 = new CrochetPatternParserLexer(input3);
-    CrochetPatternParserParser parser3 = new CrochetPatternParserParser(
-        new CommonTokenStream(lexer3));
-    ParseTree tree3 = parser3.instructions(); // begin parsing at instruction rule
+//
+//    CharStream input3 = CharStreams.fromString("3 tr");
+//    CrochetPatternParserLexer lexer3 = new CrochetPatternParserLexer(input3);
+//    CrochetPatternParserParser parser3 = new CrochetPatternParserParser(
+//        new CommonTokenStream(lexer3));
+//    ParseTree tree3 = parser3.instructions(); // begin parsing at instruction rule
 ////
 ////    CharStream input4 = CharStreams.fromString("6 dtr");
 ////    CrochetPatternParserLexer lexer4 = new CrochetPatternParserLexer(input4);
@@ -105,7 +106,7 @@ public class CrochetApplication extends Application {
     CrochetVisitor<String> eval = new CrochetVisitor<String>(pattern);
     eval.visit(tree);
     eval.visit(tree2);
-    eval.visit(tree3);
+//    eval.visit(tree3);
 ////    eval.visit(tree4);
 
     Platform.runLater(() -> {
@@ -118,5 +119,9 @@ public class CrochetApplication extends Application {
     });
 
 
+  }
+
+  public Window getStage() {
+    return stage;
   }
 }

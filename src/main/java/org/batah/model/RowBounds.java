@@ -73,4 +73,7 @@ public class RowBounds implements Serializable {
     return getStitchAndBounds(i).getAttachmentCoords();
   }
 
+  public int getStitchCount() {
+    return stitchBounds.size();
+  }
 }

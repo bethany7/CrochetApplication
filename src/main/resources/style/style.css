@@ -42,3 +42,9 @@
 .stitchPanel {
   -fx-border-color: #a013a4;
 }
+
+.popup {
+  -fx-background-color: #a8a369;
+  -fx-padding: 15;
+  -fx-spacing: 10;
+}

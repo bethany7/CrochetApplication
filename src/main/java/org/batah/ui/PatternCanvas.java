@@ -4,12 +4,12 @@ import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
+import java.util.ArrayList;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Scale;
 import org.batah.SerializableBounds;
@@ -46,11 +46,16 @@ public class PatternCanvas extends Pane {
   private ImageView activeResizeHandle = null;
   private EventHandler<MouseEvent> activeResizeHandler = null;
 
+  private Row currentRow;
+
+  private int moveCounter = 0;
+
 
   public PatternCanvas(Pattern pattern, GraphicalView graphicalView) {
     this.pattern = pattern;
     this.graphicalView = graphicalView;
     graphicalView.patternCanvas = this;
+    this.currentRow = pattern.getRow(1);
   }
 
   public void drawPattern(int width, int height) {
@@ -78,6 +83,7 @@ public class PatternCanvas extends Pane {
       drawChain(pattern.getRow(1));
       for (int i = 2; i <= rowCount; i++) {
         var row = pattern.getRow(i);
+        currentRow = row;
         var rowBounds = drawRow(row);
         pattern.addRowBounds(rowBounds);
       }
@@ -104,6 +110,7 @@ public class PatternCanvas extends Pane {
   public void redrawFromSaved(Pattern pattern) {
 
     for (RowBounds rowBounds : pattern.getRowBoundsList()) {
+      currentRow = rowBounds.getRow();
       offsetX =
           (pattern.getRowBoundsList().getFirst().getStitch(0).getDefaultStitchWidth() / 2)
               * scaleX
@@ -130,7 +137,7 @@ public class PatternCanvas extends Pane {
         }
         stitchPath.setPickOnBounds(true);
         stitchPath.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> {
-          stitchClickedHandler(stitchPath, stitchBounds, rowBounds);
+          stitchClickedHandler(e, stitchPath, stitchBounds, rowBounds);
         });
 
       }
@@ -165,7 +172,7 @@ public class PatternCanvas extends Pane {
       rowBounds.addStitchBounds(stitchBounds);
       stitchPath.setPickOnBounds(true);
       stitchPath.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> {
-        stitchClickedHandler(stitchPath, stitchBounds, rowBounds);
+        stitchClickedHandler(e, stitchPath, stitchBounds, rowBounds);
       });
 
       graphicalView.patternPane.getChildren().add(stitchPath);
@@ -249,14 +256,14 @@ public class PatternCanvas extends Pane {
       rowBounds.addStitchBounds(stitchBounds);
 
       stitchPath.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> {
-        stitchClickedHandler(stitchPath, stitchBounds, rowBounds);
+        stitchClickedHandler(e, stitchPath, stitchBounds, rowBounds);
       });
 
     }
     return rowBounds;
   }
 
-  public void stitchClickedHandler(SVGPath stitchPath, StitchBounds stitchBounds,
+  public void stitchClickedHandler(MouseEvent e, SVGPath stitchPath, StitchBounds stitchBounds,
       RowBounds rowBounds) {
 
     if (activeStitch != null) {
@@ -265,8 +272,8 @@ public class PatternCanvas extends Pane {
       activeResizeHandle.removeEventHandler(MouseEvent.MOUSE_DRAGGED, activeResizeHandler);
     }
 
-    EventHandler<MouseEvent> stitchHandler = e -> {
-      stitchClickedHandler(stitchPath, stitchBounds, rowBounds);
+    EventHandler<MouseEvent> stitchHandler = e1 -> {
+      stitchClickedHandler(e1, stitchPath, stitchBounds, rowBounds);
     };
     stitchPath.addEventHandler(MouseEvent.MOUSE_CLICKED, stitchHandler);
 
@@ -298,11 +305,11 @@ public class PatternCanvas extends Pane {
 
     selected = true;
 
-    EventHandler<MouseEvent> moveHandleHandler = e -> moveHandleOnDraggedHandler(e, stitchPath,
+    EventHandler<MouseEvent> moveHandleHandler = e2 -> moveHandleOnDraggedHandler(e2, stitchPath,
         border, stitchBounds, rowBounds, moveHandle, resizeHandle);
     moveHandle.addEventHandler(MouseEvent.MOUSE_DRAGGED, moveHandleHandler);
 
-    EventHandler<MouseEvent> resizeHandleHandler = e2 -> resizeHandleOnDraggedHandler(e2,
+    EventHandler<MouseEvent> resizeHandleHandler = e3 -> resizeHandleOnDraggedHandler(e3,
         border, stitchBounds, rowBounds, stitchPath, resizeHandle, moveHandle);
     resizeHandle.addEventHandler(MouseEvent.MOUSE_DRAGGED, resizeHandleHandler);
 
@@ -318,6 +325,7 @@ public class PatternCanvas extends Pane {
       SVGPath border, StitchBounds stitchBounds, RowBounds rowBounds, ImageView moveHandle,
       ImageView resizeHandle) {
 
+    //e.consume();
     var offsetX = e.getX();
     var offsetY = e.getY();
     var allCoords = pattern.getAllAttachmentCoords();
@@ -350,7 +358,7 @@ public class PatternCanvas extends Pane {
         resizeHandle.setY(stitchPath.getBoundsInParent().getMinY() - 10);
         StitchLoc newParentLoc = pattern.getStitchLocByAttachmentCoords(coords);
 
-        moveHandle.removeEventHandler(MouseEvent.MOUSE_RELEASED, activeMoveHandleHandler);
+        moveHandle.removeEventHandler(MouseEvent.MOUSE_DRAGGED, activeMoveHandleHandler);
 
         EventHandler<MouseEvent> moveHandleHandler = e2 -> moveHandleOnDragReleasedHandler(e2,
             stitchPath, border, stitchBounds, rowBounds, moveHandle, resizeHandle, newParentLoc);
@@ -368,6 +376,7 @@ public class PatternCanvas extends Pane {
       SVGPath border, StitchBounds stitchBounds, RowBounds rowBounds, ImageView moveHandle,
       ImageView resizeHandle, StitchLoc newParentLoc) {
 
+    //e.consume();
     Stitch stitch = stitchBounds.getStitch();
 
     stitch.getParentStitches().clear();
@@ -383,7 +392,7 @@ public class PatternCanvas extends Pane {
     System.out.println(newStitchBounds);
     pattern.addRowBounds(rowBounds);
 
-    moveHandle.removeEventHandler(MouseEvent.MOUSE_DRAGGED, activeMoveHandleHandler);
+    moveHandle.removeEventHandler(MouseEvent.MOUSE_RELEASED, activeMoveHandleHandler);
     EventHandler<MouseEvent> moveHandleHandler = e2 -> moveHandleOnDraggedHandler(e2,
         stitchPath, border, stitchBounds, rowBounds, moveHandle, resizeHandle);
     moveHandle.addEventHandler(MouseEvent.MOUSE_DRAGGED, moveHandleHandler);
@@ -483,21 +492,70 @@ public class PatternCanvas extends Pane {
 
   public void addStitch(Stitch stitch) {
     SVGPath stitchPath = stitch.Draw();
-    stitchPath.setScaleX(scaleX);
-    stitchPath.setScaleY(scaleY);
-    stitchPath.setLayoutX(10);
-    stitchPath.setLayoutY(10);
+    stitchPath.relocate(10, 10);
+    stitchPath.getTransforms().add(new Scale(scaleX, scaleY));
     stitchPath.setPickOnBounds(true);
-    stitchPath.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> {
-      stitchClickedHandler(stitchPath, null, null);
-    });
+
+    Stitch prevStitch;
+    if (currentRow.getStitchCount() != 0) {
+      prevStitch = currentRow.getStitches().getLast();
+    } else {
+      prevStitch = pattern.getRow(currentRow.getRowNum() - 1).getStitches().getLast();
+    }
+
+    var prevStitchLoc = prevStitch.getLoc();
+    int thisStitchNum;
+    if (prevStitchLoc.getRowNum() == 1) {
+      addRow();
+      thisStitchNum = 1;
+    } else {
+      thisStitchNum = prevStitchLoc.getStitchNum() + 1;
+    }
+    var thisStitchLoc = new StitchLoc(currentRow.getRowNum(), thisStitchNum);
+    stitch.setLoc(thisStitchLoc);
+    StitchLoc thisStitchParentLoc;
+    if (prevStitch.getParentStitches() != null) {
+      var prevStitchParent = prevStitch.getParentStitches().getLast();
+      var prevStitchParentRow = prevStitchParent.getRowNum();
+      var prevStitchParentNum = prevStitchParent.getStitchNum();
+      if (stitch.getLoc().getRowNum() % 2 == 0) {
+        thisStitchParentLoc = new StitchLoc(prevStitchParentRow, prevStitchParentNum - 1);
+      } else {
+        thisStitchParentLoc = new StitchLoc(prevStitchParentRow, prevStitchParentNum + 1);
+      }
+    } else {
+      thisStitchParentLoc = new StitchLoc(1, prevStitchLoc.getStitchNum() - 1);
+    }
+    ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
+    parentStitches.add(thisStitchParentLoc);
+    stitch.setParentStitches(parentStitches);
+
+    StitchBounds stitchBounds = new StitchBounds(stitch, new SerializableBounds(
+        stitchPath.getBoundsInParent().getMinX(),
+        stitchPath.getBoundsInParent().getMinY(),
+        stitchPath.getBoundsInParent().getWidth(),
+        stitchPath.getBoundsInParent().getHeight()));
+    RowBounds rowBounds = pattern.getRowBounds(currentRow.getRowNum() - 1);
+    rowBounds.addStitchBounds(stitchBounds);
+    pattern.addRowBounds(rowBounds);
+
     graphicalView.patternPane.getChildren().add(stitchPath);
+
+    stitchPath.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> {
+      stitchClickedHandler(e, stitchPath, stitchBounds, rowBounds);
+    });
+  }
+
+  public void addRow() {
+    var row = new Row(pattern);
+    pattern.addRow(row);
+    currentRow = row;
+    System.out.println("Row added");
   }
 
   public void done() {
-    pattern.updateStitchRow();
-    //pattern.sortByBounds();
-    System.out.println(pattern);
+    pattern.updateAll();
+    //System.out.println(pattern);
   }
 
 

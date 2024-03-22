@@ -2,6 +2,7 @@ package org.batah.ui;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -92,8 +93,11 @@ public class GraphicalView extends BaseWindow {
     addRowPane.setPrefWidth(width);
     addRowPane.getStyleClass().add("addRowPane");
     main.setBottom(addRowPane);
-    var testText5 = new Text("Add Row Goes Here!");
-    addRowPane.getChildren().add(testText5);
+    var addRowButton = new Button("Add Row");
+    addRowPane.getChildren().add(addRowButton);
+    addRowButton.setOnMouseClicked(e -> {
+      patternCanvas.addRow();
+    });
 
   }
 

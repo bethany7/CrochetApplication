@@ -1,13 +1,24 @@
 package org.batah.ui;
 
+import javafx.application.Platform;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import org.batah.CrochetApplication;
+import org.batah.model.Pattern;
+import org.batah.model.Row;
+import org.batah.model.stitches.Chain;
+import org.batah.model.stitches.Stitch.Attachment;
+import org.batah.model.stitches.StitchBuilder;
+import org.batah.model.stitches.StitchLoc;
 
 public class StartView extends BaseWindow {
+
+  private int length;
 
   public StartView(CrochetApplication app, int width, int height, String style) {
     super(app, width, height, style);
@@ -31,11 +42,7 @@ public class StartView extends BaseWindow {
     });
     optionsPane.getChildren().add(newProjectTextButton);
 
-    var newProjectChartButton = new Button("New Project from Chart Pattern");
-    newProjectChartButton.setOnAction(e -> {
-      app.createPattern();
-      app.openGraphicalView();
-    });
+    var newProjectChartButton = newChartProject();
     optionsPane.getChildren().add(newProjectChartButton);
 
     var openSavedProjectButton = new Button("Open Saved Project");
@@ -48,4 +55,54 @@ public class StartView extends BaseWindow {
 
 
   }
+
+  private Button newChartProject() {
+    var newProjectChartButton = new Button("New Project from Chart Pattern");
+    newProjectChartButton.setOnAction(e -> {
+      Pattern pattern = app.getPattern();
+      var popup = new Popup() {
+        @Override
+        public void show() {
+          super.show();
+        }
+      };
+      var startingChainText = new Text("Starting Chain Length: ");
+      var startingChainLength = new TextField();
+      var startButton = new Button("Start");
+
+      var window = new HBox();
+
+      window.getStyleClass().add("popup");
+      window.setPrefWidth(400);
+      window.setPrefHeight(100);
+      window.setAlignment(javafx.geometry.Pos.CENTER);
+      window.getChildren().add(startingChainText);
+      window.getChildren().add(startingChainLength);
+      window.getChildren().add(startButton);
+      popup.getContent().add(window);
+
+      startButton.setOnAction(e2 -> {
+        length = Integer.parseInt(startingChainLength.getText());
+        pattern.addRow(new Row(pattern));
+        for (int i = 0; i < length; i++) {
+          Chain chain = new Chain(Attachment.NONE, null,
+              new StitchLoc(0, 0), pattern.getRow(1));
+          pattern.getRow(1).addStitch(chain);
+//      }
+        }
+        app.setPattern(pattern);
+        app.openGraphicalView();
+        popup.hide();
+      });
+
+      Platform.runLater(() -> {
+        popup.show(app.getStage());
+        popup.requestFocus();
+      });
+
+    });
+    return newProjectChartButton;
+  }
+
+
 }
