@@ -1,18 +1,13 @@
 package org.batah.ui;
 
-import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import org.batah.CrochetApplication;
 import org.batah.model.Pattern;
 import org.batah.model.Row;
@@ -83,7 +78,7 @@ public class GraphicalView extends BaseWindow {
     var doneButton = new Text("Done");
     toolbarPane.getChildren().add(doneButton);
     doneButton.setOnMouseClicked(e -> {
-      patternCanvas.done();
+      patternCanvas.updatePattern();
     });
 
     // Add Row Pane?
@@ -96,6 +91,18 @@ public class GraphicalView extends BaseWindow {
     addRowPane.getChildren().add(addRowButton);
     addRowButton.setOnMouseClicked(e -> {
       patternCanvas.addRow();
+    });
+
+    var deleteStitchButton = new Button("Delete Stitch");
+    addRowPane.getChildren().add(deleteStitchButton);
+    deleteStitchButton.setOnMouseClicked(e -> {
+      patternCanvas.deleteStitch();
+    });
+
+    var savePatternButton = new Button("Save Pattern");
+    addRowPane.getChildren().add(savePatternButton);
+    savePatternButton.setOnMouseClicked(e -> {
+      patternCanvas.savePattern();
     });
 
   }

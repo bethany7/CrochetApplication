@@ -1,5 +1,7 @@
 package org.batah.ui;
 
+import java.io.File;
+import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -7,8 +9,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Popup;
 import org.batah.CrochetApplication;
+import org.batah.SerializationUtil;
 import org.batah.model.Pattern;
 import org.batah.model.Row;
 import org.batah.model.stitches.Chain;
@@ -47,7 +52,20 @@ public class StartView extends BaseWindow {
 
     var openSavedProjectButton = new Button("Open Saved Project");
     openSavedProjectButton.setOnAction(e -> {
-      //app.openSavedProject();
+      FileChooser fileChooser = new FileChooser();
+      fileChooser.setTitle("Open Pattern File");
+      fileChooser.getExtensionFilters().addAll(
+          new ExtensionFilter("Pattern Files", "*.ser"));
+      File selectedFile = fileChooser.showOpenDialog(app.getStage());
+      if (selectedFile != null) {
+        try {
+          Pattern pattern = (Pattern) SerializationUtil.deserialize(selectedFile.getAbsolutePath());
+          app.setPattern(pattern);
+          app.openGraphicalView();
+        } catch (Exception e1) {
+          e1.printStackTrace();
+        }
+      }
     });
     optionsPane.getChildren().add(openSavedProjectButton);
 
@@ -85,8 +103,10 @@ public class StartView extends BaseWindow {
         length = Integer.parseInt(startingChainLength.getText());
         pattern.addRow(new Row(pattern));
         for (int i = 0; i < length; i++) {
-          Chain chain = new Chain(Attachment.NONE, null,
-              new StitchLoc(0, 0), pattern.getRow(1));
+          ArrayList<StitchLoc> parentStitches = new ArrayList<>();
+          parentStitches.add(new StitchLoc(0, 0));
+          Chain chain = new Chain(Attachment.NONE, parentStitches,
+              new StitchLoc(1, i), pattern.getRow(1));
           pattern.getRow(1).addStitch(chain);
 //      }
         }

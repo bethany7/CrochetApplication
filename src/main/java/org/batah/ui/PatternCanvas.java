@@ -4,7 +4,9 @@ import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
-import com.sun.javafx.tk.PlatformImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -13,8 +15,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Scale;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import org.batah.SerializableBounds;
 
+import org.batah.SerializationUtil;
 import org.batah.decorators.SelectedStitch;
 import org.batah.model.Coords;
 import org.batah.model.Pattern;
@@ -49,8 +54,6 @@ public class PatternCanvas extends Pane {
   private EventHandler<MouseEvent> activeResizeHandler = null;
 
   private Row currentRow;
-
-  private int moveCounter = 0;
 
 
   public PatternCanvas(Pattern pattern, GraphicalView graphicalView) {
@@ -408,7 +411,7 @@ public class PatternCanvas extends Pane {
     activeResizeHandle = resizeHandle;
     activeResizeHandler = resizeHandleHandler;
 
-    done();
+    updatePattern();
 
 //    try {
 //      SerializationUtil.serialize(pattern, "pattern2.ser");
@@ -496,7 +499,8 @@ public class PatternCanvas extends Pane {
   }
 
   public void addStitch(String stitchName) {
-    Stitch stitch = StitchBuilder.buildStitch(stitchName, null, null, null, currentRow);
+    Stitch stitch = StitchBuilder.buildStitch(stitchName, null, new ArrayList<>(),
+        new StitchLoc(0, 0), currentRow);
     SVGPath stitchPath = stitch.Draw();
     stitchPath.relocate(10, 10);
     stitchPath.getTransforms().add(new Scale(scaleX, scaleY));
@@ -560,9 +564,43 @@ public class PatternCanvas extends Pane {
     System.out.println("Row added");
   }
 
-  public void done() {
+  public void updatePattern() {
     pattern.updateAll();
     pattern.prettyPrint();
+  }
+
+  public void deleteStitch() {
+    SVGPath stitchPath = activeStitch;
+    StitchBounds stitchBounds = pattern.getStitchByPath(stitchPath);
+    RowBounds rowBounds = pattern.getRowBounds(stitchBounds.getStitch().getLoc().getRowNum());
+    rowBounds.removeStitchBounds(stitchBounds);
+    graphicalView.patternPane.getChildren().remove(stitchPath);
+    //deselect stitch
+    graphicalView.patternPane.getChildren()
+        .remove(graphicalView.patternPane.lookup(".selected-stitch"));
+    graphicalView.patternPane.getChildren()
+        .remove(graphicalView.patternPane.lookup(".move-handle"));
+    graphicalView.patternPane.getChildren()
+        .remove(graphicalView.patternPane.lookup(".resize-handle"));
+    selected = false;
+    updatePattern();
+  }
+
+  public void savePattern() {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Save Pattern File");
+    fileChooser.getExtensionFilters().addAll(
+        new ExtensionFilter("Pattern Files", "*.ser"));
+    File selectedFile = fileChooser.showSaveDialog(graphicalView.getScene().getWindow());
+    if (selectedFile != null) {
+      //serialize to file
+      try {
+        SerializationUtil.serialize(pattern, selectedFile.getAbsolutePath());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
   }
 
 

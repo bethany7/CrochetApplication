@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import javafx.scene.shape.SVGPath;
 import org.batah.SerializableBounds;
 import org.batah.model.stitches.Stitch;
 import org.batah.model.stitches.StitchLoc;
@@ -139,9 +140,23 @@ public class Pattern implements Serializable {
     return null;
   }
 
+  public StitchBounds getStitchByPath(SVGPath stitchPath) {
+    for (RowBounds rowBounds : rowBoundsList) {
+      for (StitchBounds stitchBounds : rowBounds.getStitchBoundsList()) {
+        if (stitchBounds.getBounds().getCenterX() == stitchPath.getBoundsInParent().getCenterX()
+            && stitchBounds.getBounds().getCenterY() == stitchPath.getBoundsInParent().getCenterY())
+        {
+          return stitchBounds;
+        }
+      }
+    }
+    return null;
+  }
+
   public void updateStitchRow() {
     List<StitchBounds> toBeModified = new ArrayList<>();
     var tempRowBoundsList = new ArrayList<>(rowBoundsList);
+    //tempRowBoundsList.removeFirst();
     for (RowBounds rowBounds : tempRowBoundsList) {
       for (StitchBounds stitchBounds : new ArrayList<>(rowBounds.getStitchBoundsList())) {
         if (stitchBounds.getStitch().getLoc().getRowNum()
@@ -164,6 +179,12 @@ public class Pattern implements Serializable {
     }
     for (StitchBounds stitchBounds : toBeModified) {
       int correctRowNum = stitchBounds.getStitch().getLoc().getRowNum();
+      System.out.println("Correct Row Num: " + correctRowNum);
+      System.out.println("Row Bounds List: " + rowBoundsList.size());
+      if (rowBoundsList.size() < correctRowNum) {
+        RowBounds rowBounds = new RowBounds(this, correctRowNum, new Row(this));
+        rowBoundsList.add(rowBounds);
+      }
       RowBounds correctRowBounds = rowBoundsList.get(correctRowNum - 1);
       rowBoundsList.remove(correctRowBounds);
       correctRowBounds.addStitchBounds(stitchBounds);
@@ -248,6 +269,12 @@ public class Pattern implements Serializable {
     updateStitchRow();
     sortByBounds();
     updateStitchLocation();
+    var tempRowBoundsList = new ArrayList<>(rowBoundsList);
+    for (RowBounds rowBounds : tempRowBoundsList) {
+      if (rowBounds.getStitchCount() == 0) {
+        removeRowBounds(rowBounds);
+      }
+    }
   }
 
   public void prettyPrint() {
