@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.SequencedCollection;
+import org.batah.SerializableBounds;
 import org.batah.model.stitches.Stitch;
 import org.batah.model.stitches.StitchLoc;
 
@@ -93,6 +93,11 @@ public class Pattern implements Serializable {
     this.rowBoundsList.remove(rowBounds);
   }
 
+  public void removeRow(Row row) {
+    this.rowList.remove(row);
+  }
+
+
   public ArrayList<RowBounds> getRowBoundsList() {
     return rowBoundsList;
   }
@@ -136,11 +141,12 @@ public class Pattern implements Serializable {
 
   public void updateStitchRow() {
     List<StitchBounds> toBeModified = new ArrayList<>();
-    for (RowBounds rowBounds : new ArrayList<>(rowBoundsList)) {
+    var tempRowBoundsList = new ArrayList<>(rowBoundsList);
+    for (RowBounds rowBounds : tempRowBoundsList) {
       for (StitchBounds stitchBounds : new ArrayList<>(rowBounds.getStitchBoundsList())) {
         if (stitchBounds.getStitch().getLoc().getRowNum()
             != stitchBounds.getStitch().getParentStitch(0).getRowNum() + 1) {
-          rowBoundsList.remove(rowBounds);
+          removeRowBounds(rowBounds);
           rowBounds.removeStitchBounds(stitchBounds);
           rowBounds.getRow().removeStitch(stitchBounds.getStitch());
           rowBoundsList.add(rowBounds);
@@ -149,9 +155,10 @@ public class Pattern implements Serializable {
           stitchBounds.getStitch().setLoc(
               new StitchLoc(stitchBounds.getStitch().getParentStitch(0).getRowNum() + 1,
                   stitchBounds.getStitch().getLoc().getStitchNum()));
-        }
-        if (stitchBounds.getStitch().getLoc().getRowNum() != rowBounds.getRowNum()) {
-          toBeModified.add(stitchBounds);
+          if (stitchBounds.getStitch().getLoc().getRowNum() != rowBounds.getRowNum()) {
+            toBeModified.add(stitchBounds);
+          }
+
         }
       }
     }
@@ -160,14 +167,14 @@ public class Pattern implements Serializable {
       RowBounds correctRowBounds = rowBoundsList.get(correctRowNum - 1);
       rowBoundsList.remove(correctRowBounds);
       correctRowBounds.addStitchBounds(stitchBounds);
+      correctRowBounds.getRow().addStitch(stitchBounds.getStitch());
       correctRowBounds.updateRow(correctRowBounds.getRow());
-
       rowBoundsList.add(correctRowBounds);
 
     }
 
     sortByRow();
-    updatePattern();
+    updateRowListFromRowBoundsList();
   }
 
 
@@ -178,22 +185,38 @@ public class Pattern implements Serializable {
         return o1.getRow().getRowNum() - o2.getRow().getRowNum();
       }
     });
-    updatePattern();
+    updateRowListFromRowBoundsList();
   }
 
   // sort row so that stitches are in order of their x-coordinates
   public void sortByBounds() {
-    for (RowBounds rowBounds : rowBoundsList) {
+    var tempRowBoundsList = new ArrayList<>(rowBoundsList);
+    for (RowBounds rowBounds : tempRowBoundsList) {
+      rowBoundsList.remove(rowBounds);
       rowBounds.getStitchBoundsList().sort(new Comparator<StitchBounds>() {
         @Override
         public int compare(StitchBounds o1, StitchBounds o2) {
           return (int) (o1.getBounds().getMinX() - o2.getBounds().getMinX());
         }
       });
+      rowBoundsList.add(rowBounds);
       rowBounds.updateRow(rowBounds.getRow());
     }
-    updatePattern();
+    updateRowListFromRowBoundsList();
   }
+
+//  public void sortByBounds() {
+//    for (RowBounds rowBounds : rowBoundsList) {
+//      rowBounds.getStitchBoundsList().sort(new Comparator<StitchBounds>() {
+//        @Override
+//        public int compare(StitchBounds o1, StitchBounds o2) {
+//          return (int) (o1.getBounds().getMinX() - o2.getBounds().getMinX());
+//        }
+//      });
+//      rowBounds.updateRow(rowBounds.getRow());
+//    }
+//    updateRowListFromRowBoundsList();
+//  }
 
   public void updateStitchLocation() {
     for (RowBounds rowBounds : rowBoundsList) {
@@ -211,10 +234,10 @@ public class Pattern implements Serializable {
       }
       rowBounds.updateRow(rowBounds.getRow());
     }
-    updatePattern();
+    updateRowListFromRowBoundsList();
   }
 
-  public void updatePattern() {
+  public void updateRowListFromRowBoundsList() {
     rowList.clear();
     for (RowBounds rowBounds : rowBoundsList) {
       rowList.add(rowBounds.getRow());

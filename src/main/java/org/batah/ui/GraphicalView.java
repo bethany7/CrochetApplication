@@ -84,7 +84,6 @@ public class GraphicalView extends BaseWindow {
     toolbarPane.getChildren().add(doneButton);
     doneButton.setOnMouseClicked(e -> {
       patternCanvas.done();
-
     });
 
     // Add Row Pane?
