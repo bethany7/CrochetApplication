@@ -114,13 +114,14 @@ public class GraphicalView extends BaseWindow {
     pattern.addRow(row);
 
     for (Stitch stitch : row.getStitches()) {
+      String stitchName = stitch.getStitchName();
       var scale = 0.2;
       SVGPath path = stitch.Draw();
       path.setScaleX(scale);
       path.setScaleY(scale);
       path.setPickOnBounds(true);
       path.setOnMouseClicked(e -> {
-        patternCanvas.addStitch(stitch);
+        patternCanvas.addStitch(stitchName);
       });
       stitchPalette.getChildren().add(path);
     }

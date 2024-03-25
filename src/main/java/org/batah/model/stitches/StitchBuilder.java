@@ -29,11 +29,11 @@ public class StitchBuilder {
       ArrayList<StitchLoc> parentStitches, StitchLoc loc,
       Row row) {
     return switch (stitchName) {
-      case "dc" -> new DoubleCrochet(attachment, parentStitches, loc, row);
-      case "tr" -> new TrebleCrochet(attachment, parentStitches, loc, row);
-      case "dtr" -> new DoubleTreble(attachment, parentStitches, loc, row);
-      case "htr" -> new HalfTreble(attachment, parentStitches, loc, row);
-      case "ttr" -> new TripleTreble(attachment, parentStitches, loc, row);
+      case "DoubleCrochet", "dc" -> new DoubleCrochet(attachment, parentStitches, loc, row);
+      case "TrebleCrochet", "tr" -> new TrebleCrochet(attachment, parentStitches, loc, row);
+      case "DoubleTreble", "dtr" -> new DoubleTreble(attachment, parentStitches, loc, row);
+      case "HalfTreble", "htr" -> new HalfTreble(attachment, parentStitches, loc, row);
+      case "TripleTreble", "ttr" -> new TripleTreble(attachment, parentStitches, loc, row);
       default -> throw new IllegalArgumentException("Invalid stitch name: " + stitchName);
     };
   }

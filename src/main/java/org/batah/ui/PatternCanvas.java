@@ -22,6 +22,7 @@ import org.batah.model.Row;
 import org.batah.model.RowBounds;
 import org.batah.model.StitchBounds;
 import org.batah.model.stitches.Stitch;
+import org.batah.model.stitches.StitchBuilder;
 import org.batah.model.stitches.StitchLoc;
 
 public class PatternCanvas extends Pane {
@@ -407,6 +408,8 @@ public class PatternCanvas extends Pane {
     activeResizeHandle = resizeHandle;
     activeResizeHandler = resizeHandleHandler;
 
+    done();
+
 //    try {
 //      SerializationUtil.serialize(pattern, "pattern2.ser");
 //    } catch (IOException e3) {
@@ -492,7 +495,8 @@ public class PatternCanvas extends Pane {
 
   }
 
-  public void addStitch(Stitch stitch) {
+  public void addStitch(String stitchName) {
+    Stitch stitch = StitchBuilder.buildStitch(stitchName, null, null, null, currentRow);
     SVGPath stitchPath = stitch.Draw();
     stitchPath.relocate(10, 10);
     stitchPath.getTransforms().add(new Scale(scaleX, scaleY));
