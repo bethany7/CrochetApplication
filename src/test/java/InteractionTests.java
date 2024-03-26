@@ -43,10 +43,10 @@ class InteractionTests {
   @Test
   void TestSimpleSort() throws IOException, ClassNotFoundException {
     Pattern pattern2 = (Pattern) SerializationUtil.deserialize("pattern.ser");
-    pattern2.prettyPrint();
+    pattern2.prettyPrintWithBounds();
     Pattern pattern3 = (Pattern) SerializationUtil.deserialize("pattern2.ser");
     pattern3.updateAll();
-    pattern3.prettyPrint();
+    pattern3.prettyPrintWithBounds();
 //
     try {
       SerializationUtil.serialize(pattern3, "pattern3.ser");

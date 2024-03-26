@@ -13,6 +13,7 @@ import org.batah.SerializationUtil;
 import org.batah.model.Pattern;
 import org.batah.model.Row;
 import org.batah.model.stitches.Stitch;
+import org.batah.model.stitches.Stitch.Attachment;
 import org.batah.model.stitches.StitchLoc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -153,21 +154,6 @@ class ParseTests {
     Stitch parentStitch = pattern.getRow(parentStitchLoc.getRowNum())
         .getStitch(parentStitchLoc.getStitchNum());
     assertEquals("DoubleCrochet", parentStitch.getStitchName());
-    try {
-      SerializationUtil.serialize(pattern, "pattern.ser");
-    } catch (IOException e) {
-      e.printStackTrace();
-      return;
-    }
-
-    try {
-      Pattern pattern2 = (Pattern) SerializationUtil.deserialize("pattern.ser");
-      System.out.println("pattern object: " + pattern);
-      System.out.println("Deserialized pattern object: " + pattern2);
-    } catch (ClassNotFoundException | IOException e) {
-      e.printStackTrace();
-    }
-
   }
 
   @Test
@@ -263,7 +249,12 @@ class ParseTests {
     assertEquals(2, pattern.getRow(3).getStitch(3).getParentStitches().size());
     assertEquals(2, pattern.getRow(3).getStitch(4).getParentStitches().size());
     assertEquals(5, pattern.getRow(3).getStitchCount());
-    assertEquals(9, pattern.getRow(3).getStitch(4).getParentStitch(1).getStitchNum());
+    assertEquals(10, pattern.getRow(3).getStitch(0).getParentStitch(0).getStitchNum());
+    assertEquals(9, pattern.getRow(3).getStitch(0).getParentStitch(1).getStitchNum());
+    assertEquals(8, pattern.getRow(3).getStitch(1).getParentStitch(0).getStitchNum());
+    assertEquals(7, pattern.getRow(3).getStitch(1).getParentStitch(1).getStitchNum());
+    assertEquals(2, pattern.getRow(3).getStitch(4).getParentStitch(0).getStitchNum());
+    assertEquals(1, pattern.getRow(3).getStitch(4).getParentStitch(1).getStitchNum());
   }
 
   @Test
@@ -288,7 +279,56 @@ class ParseTests {
     assertEquals(2, pattern.getRow(3).getStitch(3).getParentStitches().size());
     assertEquals(2, pattern.getRow(3).getStitch(4).getParentStitches().size());
     assertEquals(5, pattern.getRow(3).getStitchCount());
-    assertEquals(9, pattern.getRow(3).getStitch(4).getParentStitch(1).getStitchNum());
+    assertEquals(10, pattern.getRow(3).getStitch(0).getParentStitch(0).getStitchNum());
+    assertEquals(9, pattern.getRow(3).getStitch(0).getParentStitch(1).getStitchNum());
+    assertEquals(8, pattern.getRow(3).getStitch(1).getParentStitch(0).getStitchNum());
+    assertEquals(7, pattern.getRow(3).getStitch(1).getParentStitch(1).getStitchNum());
+    assertEquals(2, pattern.getRow(3).getStitch(4).getParentStitch(0).getStitchNum());
+    assertEquals(1, pattern.getRow(3).getStitch(4).getParentStitch(1).getStitchNum());
+  }
+
+  @Test
+  void incOnDecTest() {
+    CharStream input = CharStreams.fromString("10 dc");
+    CrochetPatternParserLexer lexer = new CrochetPatternParserLexer(input);
+    CrochetPatternParserParser parser = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer));
+    ParseTree tree = parser.instructions();
+    visitor.visit(tree);
+    CharStream input2 = CharStreams.fromString("2 tr3tog, 2tr, dc2tog");
+    CrochetPatternParserLexer lexer2 = new CrochetPatternParserLexer(input2);
+    CrochetPatternParserParser parser2 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer2));
+    ParseTree tree2 = parser2.instructions();
+    visitor.visit(tree2);
+    CharStream input3 = CharStreams.fromString("2 dc in next 5 tr");
+    CrochetPatternParserLexer lexer3 = new CrochetPatternParserLexer(input3);
+    CrochetPatternParserParser parser3 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer3));
+    ParseTree tree3 = parser3.instructions();
+    visitor.visit(tree3);
+    CharStream input4 = CharStreams.fromString("10 tr");
+    CrochetPatternParserLexer lexer4 = new CrochetPatternParserLexer(input4);
+    CrochetPatternParserParser parser4 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer4));
+    ParseTree tree4 = parser4.instructions();
+    visitor.visit(tree4);
+    assertEquals(5, pattern.getRowCount());
+    assertEquals(10, pattern.getRow(1).getStitchCount());
+    assertEquals(10, pattern.getRow(2).getStitchCount());
+    assertEquals(5, pattern.getRow(3).getStitchCount());
+    assertEquals(10, pattern.getRow(4).getStitchCount());
+    assertEquals(10, pattern.getRow(5).getStitchCount());
+    assertEquals(10, pattern.getRow(3).getStitch(0).getParentStitch(0).getStitchNum());
+    assertEquals(9, pattern.getRow(3).getStitch(0).getParentStitch(1).getStitchNum());
+    assertEquals(8, pattern.getRow(3).getStitch(0).getParentStitch(2).getStitchNum());
+    assertEquals(7, pattern.getRow(3).getStitch(1).getParentStitch(0).getStitchNum());
+    assertEquals(6, pattern.getRow(3).getStitch(1).getParentStitch(1).getStitchNum());
+    assertEquals(5, pattern.getRow(3).getStitch(1).getParentStitch(2).getStitchNum());
+    assertEquals(4, pattern.getRow(4).getStitch(2).getParentStitch(0).getStitchNum());
+    assertEquals(4, pattern.getRow(4).getStitch(3).getParentStitch(0).getStitchNum());
+    assertEquals(3, pattern.getRow(4).getStitch(4).getParentStitch(0).getStitchNum());
+    assertEquals(3, pattern.getRow(4).getStitch(5).getParentStitch(0).getStitchNum());
   }
 
   @Test
@@ -433,6 +473,58 @@ class ParseTests {
     assertEquals("TrebleCrochet", pattern.getRow(3).getStitch(1).getStitchName());
     assertEquals("DoubleCrochet", pattern.getRow(3).getStitch(2).getStitchName());
     assertEquals("TrebleCrochet", pattern.getRow(3).getStitch(3).getStitchName());
+  }
+
+  @Test
+  void skipAndChainTest() {
+    CharStream input = CharStreams.fromString("10 tr");
+    CrochetPatternParserLexer lexer = new CrochetPatternParserLexer(input);
+    CrochetPatternParserParser parser = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer));
+    ParseTree tree = parser.instructions();
+    visitor.visit(tree);
+    CharStream input2 = CharStreams.fromString(
+        "2 tr, ch 3, skip 2, 2 dc in next 2 tr, 4 tr");
+    CrochetPatternParserLexer lexer2 = new CrochetPatternParserLexer(input2);
+    CrochetPatternParserParser parser2 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer2));
+    ParseTree tree2 = parser2.instructions();
+    visitor.visit(tree2);
+    CharStream input3 = CharStreams.fromString(
+        "12 dc");
+    CrochetPatternParserLexer lexer3 = new CrochetPatternParserLexer(input3);
+    CrochetPatternParserParser parser3 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer3));
+    ParseTree tree3 = parser3.instructions();
+    visitor.visit(tree3);
+    assertEquals(4, pattern.getRowCount());
+    assertEquals(10, pattern.getRow(2).getStitchCount());
+    assertEquals(13, pattern.getRow(3).getStitchCount());
+    assertEquals(12, pattern.getRow(4).getStitchCount());
+    assertEquals(0, pattern.getRow(3).getStitch(3).getParentStitch(0).getStitchNum());
+    assertEquals(Attachment.NONE, pattern.getRow(3).getStitch(3).getAttachment());
+    assertEquals(6, pattern.getRow(3).getStitch(5).getParentStitch(0).getStitchNum());
+    assertEquals(6, pattern.getRow(3).getStitch(6).getParentStitch(0).getStitchNum());
+    assertEquals(5, pattern.getRow(3).getStitch(7).getParentStitch(0).getStitchNum());
+    assertEquals(5, pattern.getRow(3).getStitch(8).getParentStitch(0).getStitchNum());
+    assertEquals(Attachment.BEYOND, pattern.getRow(4).getStitch(9).getAttachment());
+  }
+
+  @Test
+  void chainSpace() {
+    CharStream input = CharStreams.fromString("4 tr, ch 4, skip 2, 4 tr");
+    CrochetPatternParserLexer lexer = new CrochetPatternParserLexer(input);
+    CrochetPatternParserParser parser = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer));
+    ParseTree tree = parser.instructions();
+    visitor.visit(tree);
+    CharStream input2 = CharStreams.fromString(
+        "4 tr, 5 tr in ch 4 space, 2 tr2tog");
+    CrochetPatternParserLexer lexer2 = new CrochetPatternParserLexer(input2);
+    CrochetPatternParserParser parser2 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer2));
+    ParseTree tree2 = parser2.instructions();
+    visitor.visit(tree2);
   }
 
 }

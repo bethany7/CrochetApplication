@@ -34,6 +34,7 @@ public class StitchBuilder {
       case "DoubleTreble", "dtr" -> new DoubleTreble(attachment, parentStitches, loc, row);
       case "HalfTreble", "htr" -> new HalfTreble(attachment, parentStitches, loc, row);
       case "TripleTreble", "ttr" -> new TripleTreble(attachment, parentStitches, loc, row);
+      case "Slip", "sl" -> new Slip(attachment, parentStitches, loc, row);
       default -> throw new IllegalArgumentException("Invalid stitch name: " + stitchName);
     };
   }

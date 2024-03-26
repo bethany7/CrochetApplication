@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import javafx.scene.shape.SVGPath;
-import org.batah.SerializableBounds;
 import org.batah.model.stitches.Stitch;
 import org.batah.model.stitches.StitchLoc;
 
@@ -144,8 +143,8 @@ public class Pattern implements Serializable {
     for (RowBounds rowBounds : rowBoundsList) {
       for (StitchBounds stitchBounds : rowBounds.getStitchBoundsList()) {
         if (stitchBounds.getBounds().getCenterX() == stitchPath.getBoundsInParent().getCenterX()
-            && stitchBounds.getBounds().getCenterY() == stitchPath.getBoundsInParent().getCenterY())
-        {
+            && stitchBounds.getBounds().getCenterY() == stitchPath.getBoundsInParent()
+            .getCenterY()) {
           return stitchBounds;
         }
       }
@@ -278,6 +277,19 @@ public class Pattern implements Serializable {
   }
 
   public void prettyPrint() {
+    System.out.print("Pattern: " + "\n");
+    for (Row row : rowList) {
+      System.out.print("Row: " + row.getRowNum() + "\n");
+      for (Stitch stitch : row.getStitches()) {
+        System.out.print(
+            "Stitch: " + stitch.getStitchName() + ", Loc: " + stitch.getLoc() + ", Attachment: "
+                + stitch.getAttachment() + ", Parent Stitches: " + stitch.getParentStitches()
+                + "\n");
+      }
+    }
+  }
+
+  public void prettyPrintWithBounds() {
     System.out.print("Pattern: " + "\n");
     for (RowBounds rowBounds : rowBoundsList) {
       System.out.print("Row: " + rowBounds.getRowNum() + "\n");

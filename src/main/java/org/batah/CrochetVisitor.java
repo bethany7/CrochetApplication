@@ -12,6 +12,8 @@ import org.batah.CrochetPatternParserParser.InChain2Context;
 import org.batah.CrochetPatternParserParser.InChain3Context;
 import org.batah.CrochetPatternParserParser.InChainInstrContext;
 import org.batah.CrochetPatternParserParser.InChainNContext;
+import org.batah.CrochetPatternParserParser.InChainSpaceContext;
+import org.batah.CrochetPatternParserParser.InChainSpaceInstrContext;
 import org.batah.CrochetPatternParserParser.InstructionsContext;
 import org.batah.CrochetPatternParserParser.NIncreasesContext;
 import org.batah.CrochetPatternParserParser.RepeatContext;
@@ -39,6 +41,9 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
   Row row;
   int skipCounter;
   int extraStitchCounter;
+  int extraChainCounter;
+  int chSpaceCounter;
+  int decCounter;
   String patternStyle;
   boolean isTurningChainStitch;
   int turningChainLength;
@@ -47,7 +52,8 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     this.pattern = pattern;
   }
 
-  public void setParameters(String patternStyle, boolean isTurningChainStitch, int turningChainLength) {
+  public void setParameters(String patternStyle, boolean isTurningChainStitch,
+      int turningChainLength) {
     this.patternStyle = patternStyle;
     this.isTurningChainStitch = isTurningChainStitch;
     this.turningChainLength = turningChainLength;
@@ -58,8 +64,11 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     row = new Row(pattern);
     pattern.addRow(row);
     this.stitchBuilder = new StitchBuilder(row);
+    chSpaceCounter = 0;
     skipCounter = 0;
     extraStitchCounter = 0;
+    extraChainCounter = 0;
+    decCounter = 0;
     return super.visitInstructions(ctx);
   }
 
@@ -94,9 +103,17 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
       int thisStitchNum = (row.getStitchCount() + 1);
       ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
       int parentStitchNum =
-          (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraStitchCounter;
+          (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraChainCounter
+              + extraStitchCounter - chSpaceCounter - decCounter;
       parentStitches.add(new StitchLoc(prevRow.getRowNum(), parentStitchNum));
-      Stitch stitch = StitchBuilder.buildStitch((java.lang.String) newStitchType, Attachment.INTO,
+      Stitch parentStitch = prevRow.getStitch(parentStitches.getFirst().getStitchNum() - 1);
+      Attachment attachment;
+      if (parentStitch.getStitchName().equals("Chain") && row.getRowNum() > 2) {
+        attachment = Attachment.BEYOND;
+      } else {
+        attachment = Attachment.INTO;
+      }
+      Stitch stitch = StitchBuilder.buildStitch((java.lang.String) newStitchType, attachment,
           parentStitches, new StitchLoc(row.getRowNum(), row.getStitchCount() + 1), row);
       row.addStitch(stitch);
     }
@@ -114,9 +131,18 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
       int thisStitchNum = (row.getStitchCount() + 1);
       ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
       int parentStitchNum =
-          (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraStitchCounter;
+          (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraChainCounter
+              + extraStitchCounter - chSpaceCounter - decCounter;
       parentStitches.add(new StitchLoc(prevRow.getRowNum(), parentStitchNum));
-      Stitch stitch = StitchBuilder.buildStitch((java.lang.String) x, Attachment.INTO,
+
+      Stitch parentStitch = prevRow.getStitch(parentStitches.getFirst().getStitchNum() - 1);
+      Attachment attachment;
+      if (parentStitch.getStitchName().equals("Chain") && row.getRowNum() > 2) {
+        attachment = Attachment.BEYOND;
+      } else {
+        attachment = Attachment.INTO;
+      }
+      Stitch stitch = StitchBuilder.buildStitch((java.lang.String) x, attachment,
           parentStitches, new StitchLoc(row.getRowNum(), row.getStitchCount() + 1), row);
       row.addStitch(stitch);
     } else {
@@ -126,9 +152,17 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
         int thisStitchNum = (row.getStitchCount() + 1);
         ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
         int parentStitchNum =
-            (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraStitchCounter;
+            (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraChainCounter
+                + extraStitchCounter - chSpaceCounter - decCounter;
         parentStitches.add(new StitchLoc(prevRow.getRowNum(), parentStitchNum));
-        Stitch stitch = StitchBuilder.buildStitch((java.lang.String) y, Attachment.INTO,
+        Stitch parentStitch = prevRow.getStitch(parentStitches.getFirst().getStitchNum() - 1);
+        Attachment attachment;
+        if (parentStitch.getStitchName().equals("Chain") && row.getRowNum() > 2) {
+          attachment = Attachment.BEYOND;
+        } else {
+          attachment = Attachment.INTO;
+        }
+        Stitch stitch = StitchBuilder.buildStitch((java.lang.String) y, attachment,
             parentStitches, new StitchLoc(row.getRowNum(), thisStitchNum),
             row);
         row.addStitch(stitch);
@@ -165,17 +199,27 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     int thisStitchNum = (row.getStitchCount() + 1);
     ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
     int parentStitchNum =
-        (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraStitchCounter;
+        (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraChainCounter
+            + extraStitchCounter - chSpaceCounter - decCounter;
+
     parentStitches.add(new StitchLoc(prevRow.getRowNum(), parentStitchNum));
 
-    Stitch stitch1 = StitchBuilder.buildStitch((java.lang.String) stitchType, Attachment.INTO,
+    Stitch parentStitch = prevRow.getStitch(parentStitches.getFirst().getStitchNum() - 1);
+    Attachment attachment;
+    if (parentStitch.getStitchName().equals("Chain") && row.getRowNum() > 2) {
+      attachment = Attachment.BEYOND;
+    } else {
+      attachment = Attachment.INTO;
+    }
+
+    Stitch stitch1 = StitchBuilder.buildStitch((java.lang.String) stitchType, attachment,
         parentStitches, new StitchLoc(row.getRowNum(), row.getStitchCount() + 1), row);
     row.addStitch(stitch1);
 
     for (int k = 1; k < incNum; k++) {
       StitchLoc thisStitch = new StitchLoc(row.getRowNum(), row.getStitchCount() + 1);
       Stitch stitchX = StitchBuilder.buildStitch((java.lang.String) stitchType,
-          Attachment.INTO, parentStitches, thisStitch, row);
+          attachment, parentStitches, thisStitch, row);
       row.addStitch(stitchX);
       extraStitchCounter++;
     }
@@ -194,14 +238,27 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     } else {
       repeats = 1;
     }
+
     for (int i = 0; i < repeats; i++) {
       Row prevRow = pattern.getRow(row.getRowNum() - 1);
       int thisStitchNum = (row.getStitchCount() + 1);
+
       ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
       int parentStitchNum =
-          (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraStitchCounter;
+          (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraChainCounter
+              + extraStitchCounter - chSpaceCounter - decCounter;
+
       parentStitches.add(new StitchLoc(prevRow.getRowNum(), parentStitchNum));
-      Stitch stitch1 = StitchBuilder.buildStitch((java.lang.String) stitchType, Attachment.INTO,
+
+      Stitch parentStitch = prevRow.getStitch(parentStitches.getFirst().getStitchNum() - 1);
+      Attachment attachment;
+      if (parentStitch.getStitchName().equals("Chain") && row.getRowNum() > 2) {
+        attachment = Attachment.BEYOND;
+      } else {
+        attachment = Attachment.INTO;
+      }
+
+      Stitch stitch1 = StitchBuilder.buildStitch((java.lang.String) stitchType, attachment,
           parentStitches,
           new StitchLoc(row.getRowNum(), thisStitchNum), row);
       row.addStitch(stitch1);
@@ -209,7 +266,7 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
       for (int k = 1; k < incNum; k++) {
         StitchLoc thisStitch = new StitchLoc(row.getRowNum(), row.getStitchCount() + 1);
         Stitch stitchX = StitchBuilder.buildStitch((java.lang.String) stitchType,
-            Attachment.INTO, parentStitches, thisStitch, row);
+            attachment, parentStitches, thisStitch, row);
         row.addStitch(stitchX);
         extraStitchCounter++;
       }
@@ -237,17 +294,21 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
     for (int k = 0; k < numTimes; k++) {
       ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
       Row prevRow = pattern.getRow(row.getRowNum() - 1);
-      int thisStitchNum = (row.getStitchCount() - 1);
+      int thisStitchNum = (row.getStitchCount() + 1);
       int firstParent =
-          (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraStitchCounter;
+          (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraChainCounter
+              + extraStitchCounter - chSpaceCounter - k - decCounter;
+      decCounter += decNum - 2;
       for (int j = 0; j < decNum; j++) {
-        StitchLoc parentStitch = new StitchLoc(prevRow.getRowNum(), firstParent + j);
+        StitchLoc parentStitch = new StitchLoc(prevRow.getRowNum(), firstParent - j);
         parentStitches.add(parentStitch);
       }
+
       Stitch stitch = StitchBuilder.buildStitch((java.lang.String) stitchType, Attachment.INTO,
           parentStitches, new StitchLoc(row.getRowNum(), thisStitchNum), row);
       row.addStitch(stitch);
     }
+    decCounter += numTimes;
     return super.visitDecrease(ctx);
   }
 
@@ -255,6 +316,15 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
   //
   @Override
   public String visitSkip(SkipContext ctx) {
+    //check previous stitches
+    for (int i = row.getStitchCount(); i > 0; i--) {
+      if (row.getStitch(i - 1).getStitchName().equals("Chain")) {
+        extraChainCounter++;
+      } else {
+        break;
+      }
+    }
+
     if (ctx.INT() != null) {
       skipCounter += Integer.parseInt(ctx.INT().getText());
     } else {
@@ -318,19 +388,58 @@ public class CrochetVisitor<String> extends CrochetPatternParserBaseVisitor<Stri
   }
 
   @Override
+  public String visitInChainSpaceInstr(InChainSpaceInstrContext ctx) {
+    var spaceSize = visit(ctx.inChainSpace());
+    var spaceSizeInt = Integer.parseInt(spaceSize.toString());
+    var newStitch = visit(ctx.stitches());
+    var parts = newStitch.toString().split(" ");
+    String newStitchType;
+    int numStitches;
+    if (parts.length > 1) {
+      numStitches = Integer.parseInt(parts[0]);
+      newStitchType = (String) parts[1];
+    } else {
+      numStitches = 1;
+      newStitchType = (String) parts[0];
+    }
+    int thisStitchNum = (row.getStitchCount() + 1);
+    ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
+
+    Row prevRow = pattern.getRow(row.getRowNum() - 1);
+
+    int parentStitchNum =
+        (int) ((prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraChainCounter
+            + extraStitchCounter - (spaceSizeInt / 2)) - chSpaceCounter - decCounter;
+    parentStitches.add(new StitchLoc(row.getRowNum() - 1, parentStitchNum));
+
+    Stitch stitch = StitchBuilder.buildStitch((java.lang.String) newStitchType, Attachment.BEYOND,
+        parentStitches, new StitchLoc(row.getRowNum(), thisStitchNum), row);
+    row.addStitch(stitch);
+
+    for (int i = 1; i < numStitches; i++) {
+      thisStitchNum += 1;
+      Stitch stitch1 = StitchBuilder.buildStitch((java.lang.String) newStitchType,
+          Attachment.BEYOND,
+          parentStitches, new StitchLoc(row.getRowNum(), thisStitchNum), row);
+      row.addStitch(stitch1);
+    }
+    chSpaceCounter += spaceSizeInt - numStitches;
+    return super.visitInChainSpaceInstr(ctx);
+  }
+
+  @Override
+  public String visitInChainSpace(InChainSpaceContext ctx) {
+    var x = ctx.INT();
+    return (String) x;
+  }
+
+  @Override
   public String visitChain(ChainContext ctx) {
     int i = Integer.parseInt(ctx.INT().getFirst().getText());
     for (int j = 0; j < i; j++) {
       ArrayList<StitchLoc> parentStitches = new ArrayList<StitchLoc>();
       int thisStitchNum = (row.getStitchCount() + 1);
-      if (this.row.getRowNum() != 1) {
-        Row prevRow = pattern.getRow(row.getRowNum() - 1);
-        int parentStitchNum =
-            (prevRow.getStitchCount() + 1) - thisStitchNum - skipCounter + extraStitchCounter;
-        parentStitches.add(new StitchLoc(prevRow.getRowNum(), parentStitchNum));
-      } else {
-        parentStitches.add(new StitchLoc(0, 0));
-      }
+      parentStitches.add(new StitchLoc(0, 0));
       Chain chain = new Chain(Attachment.NONE, parentStitches,
           new StitchLoc(row.getRowNum(), thisStitchNum), row);
       row.addStitch(chain);

@@ -29,7 +29,8 @@ public class Slip extends Stitch {
     path.setStroke(javafx.scene.paint.Color.BLACK);
     path.setStrokeWidth(2);
 
-    String content = "M 50,50 m 50,0 a 50,50 0 1, 0 -100,0 a 50,50 0 1,0 100, 0 z";
+//    String content = "M 50,50 m 50,0 a 50,50 0 1, 0 -100,0 a 50,50 0 1,0 100, 0 z";
+    String content = "M 50,50 m 25,0 a 25,25 0 1, 0 -50,0 a 25,25 0 1,0 50, 0 z";
     path.setContent(content);
 
     return path;

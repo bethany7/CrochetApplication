@@ -75,6 +75,7 @@ public class GraphicalView extends BaseWindow {
     patternPane.getStyleClass().add("patternPane");
     main.setCenter(patternPane);
 
+
     var doneButton = new Text("Done");
     toolbarPane.getChildren().add(doneButton);
     doneButton.setOnMouseClicked(e -> {

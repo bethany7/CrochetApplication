@@ -49,6 +49,10 @@ public abstract class Stitch implements Serializable {
     return attachment;
   }
 
+  public void setAttachment(Attachment attachment) {
+    this.attachment = attachment;
+  }
+
   public ArrayList<StitchLoc> getParentStitches() {
     return parentStitches;
   }

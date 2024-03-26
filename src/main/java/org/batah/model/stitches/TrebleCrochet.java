@@ -28,7 +28,7 @@ public class TrebleCrochet extends Stitch {
     path.setStroke(javafx.scene.paint.Color.BLACK);
     path.setStrokeWidth(2);
 
-    String content = "M 100,280 V 100,0 M 5,0 H 195,0 M 60,100 L 140, 160";
+    String content = "M 100,278 V 100,2 M 5,0 H 195,0 M 60,100 L 140, 160";
     path.setContent(content);
 
     return path;

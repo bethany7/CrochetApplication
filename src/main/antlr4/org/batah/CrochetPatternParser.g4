@@ -9,6 +9,7 @@ instructions2 : instruction (',' instruction)*;
 
 instruction :  chain                   # ChainInstr
               | stitches inChain        # InChainInstr
+              | stitches inChainSpace   # InChainSpaceInstr
               | decrease                # DecreaseInstr
               | increase                # IncreaseInstr
               | stitches direction     # StitchDirectionInstr
@@ -47,6 +48,12 @@ inChain : 'in 1st' CHAINSTITCH 'from hook'        # InChain1
         | 'in 3rd' CHAINSTITCH 'from hook'        # InChain3
         | 'in' INT 'th' CHAINSTITCH 'from hook'   # InChainN
         ;
+
+inChainSpace : 'in chain' INT 'space'
+             | 'in' INT 'ch space'
+             | 'in ch' INT 'sp'
+             | 'in ch' INT 'space'
+             | 'in' INT 'chain sp' ;
 
 chain : CHAINSTITCH (INT)*
       | CHAINSTITCH INT 'up'

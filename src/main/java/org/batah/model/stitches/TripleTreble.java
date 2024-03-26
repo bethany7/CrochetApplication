@@ -26,7 +26,7 @@ public class TripleTreble extends Stitch {
     path.setStroke(javafx.scene.paint.Color.BLACK);
     path.setStrokeWidth(2);
 
-    String content = "M 100,360 V 100,0 M 5,0 H 195,0 M 60,100 L 140, 160 M 60,130 L 140, 190 M 60, 160 L 140, 220";
+    String content = "M 100,358 V 100,2 M 5,0 H 195,0 M 60,100 L 140, 160 M 60,130 L 140, 190 M 60, 160 L 140, 220";
 
     path.setContent(content);
 
