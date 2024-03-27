@@ -144,4 +144,8 @@ public class GraphicalView extends BaseWindow {
     return (int) patternPane.getHeight();
   }
 
+  public void setPatternCanvas(PatternCanvas patternCanvas) {
+    this.patternCanvas = patternCanvas;
+    }
+
 }

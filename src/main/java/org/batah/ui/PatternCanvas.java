@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -56,6 +57,8 @@ public class PatternCanvas extends Pane {
 
   private Row currentRow;
 
+  private int totalIncreaseCounter = 0;
+  private int currentIncreaseCounter = 0;
 
   public PatternCanvas(Pattern pattern, GraphicalView graphicalView) {
     this.pattern = pattern;
@@ -110,6 +113,7 @@ public class PatternCanvas extends Pane {
         var stitch = stitchBounds.getStitch();
         SVGPath stitchPath = stitch.Draw();
         stitchPath.setStrokeWidth(3);
+        int rotation = stitchBounds.getBounds().getRotation();
         if (stitch.getStitchName().equals("Chain")) {
           offsetY = (height - 40 - (stitch.getDefaultStitchHeight() / 2 * scaleY));
           stitchPath.setLayoutX(offsetX);
@@ -124,6 +128,19 @@ public class PatternCanvas extends Pane {
           offsetY = stitchBounds.getBounds().getMinY();
           stitchPath.relocate(offsetX, offsetY);
           stitchPath.getTransforms().add(new Scale(scaleX, scaleY));
+          Rotate rotate = new Rotate(rotation, stitchPath.getBoundsInLocal().getCenterX(),
+              stitchPath
+                  .getBoundsInLocal().getMaxY());
+          stitchPath.getTransforms().add(rotate);
+          if (stitchBounds.getBounds().getRotation() < 180 && stitchBounds.getBounds().getRotation()
+              > 0) {
+            var newOffsetX = offsetX - stitchPath.getBoundsInParent().getWidth() / 2 - 2;
+            stitchPath.relocate(newOffsetX, offsetY);
+          } else if (stitchBounds.getBounds().getRotation() > 180) {
+
+            var newOffsetX = offsetX + stitchPath.getBoundsInParent().getWidth() / 2 - 4;
+            stitchPath.relocate(newOffsetX, offsetY);
+          }
           graphicalView.patternPane.getChildren().add(stitchPath);
         }
         stitchPath.setPickOnBounds(true);
@@ -155,10 +172,14 @@ public class PatternCanvas extends Pane {
       stitchPath.setLayoutY(offsetY);
       stitchPath.setScaleX(scaleX);
       stitchPath.setScaleY(scaleY);
+      int rotation = 0;
+      double pivotX = stitchPath.getBoundsInLocal().getCenterX();
+      double pivotY = stitchPath.getBoundsInLocal().getMaxY();
 
       SerializableBounds serialBounds = new SerializableBounds(
           stitchPath.getBoundsInParent().getMinX(), stitchPath.getBoundsInParent().getMinY(),
-          stitchPath.getBoundsInParent().getWidth(), stitchPath.getBoundsInParent().getHeight());
+          stitchPath.getBoundsInParent().getWidth(), stitchPath.getBoundsInParent().getHeight(),
+          rotation, pivotX, pivotY);
       StitchBounds stitchBounds = new StitchBounds(stitch, serialBounds);
       rowBounds.addStitchBounds(stitchBounds);
       stitchPath.setPickOnBounds(true);
@@ -178,6 +199,7 @@ public class PatternCanvas extends Pane {
   public RowBounds drawRow(Row row) {
 
     RowBounds rowBounds = new RowBounds(pattern, row.getRowNum(), row);
+    int rotation = 0;
 
     for (int j = 0; j < row.getStitchCount(); j++) {
 
@@ -245,11 +267,23 @@ public class PatternCanvas extends Pane {
         stitchPath.getTransforms().add(new Scale(scaleX, scaleY));
 
       } else {
-        parentStitchNum = stitch.getParentStitch(0).getStitchNum() - 1;
+        if (totalIncreaseCounter == 0 && j < row.getStitchCount() - 1
+            && stitch.getParentStitches().getFirst() == row.getStitch(j + 1)
+            .getParentStitches().getFirst()) {
+          totalIncreaseCounter++;
+          currentIncreaseCounter++;
+          for (int k = j; k < row.getStitchCount() - 1; k++) {
+            if (row.getStitch(k + 1).getParentStitches().getFirst().getStitchNum()
+                == stitch.getParentStitch(0).getStitchNum()) {
+              totalIncreaseCounter++;
+              currentIncreaseCounter++;
+            } else {
+              break;
+            }
+          }
+        }
 
-//        if (row.getStitch(j + 1).getParentStitches().getFirst().getStitchNum() == parentStitchNum) {
-//
-//        }
+        parentStitchNum = stitch.getParentStitch(0).getStitchNum() - 1;
 
         offsetX =
             pattern.getRowBounds(row.getRowNum() - 1).getStitchAndBounds(parentStitchNum)
@@ -264,23 +298,61 @@ public class PatternCanvas extends Pane {
         stitchPath.setStrokeWidth(3);
         stitchPath.relocate(offsetX, offsetY);
         stitchPath.getTransforms().add(new Scale(scaleX, scaleY));
+        var bounds = stitchPath.getBoundsInParent();
+        var pivotX = stitchPath.getBoundsInLocal().getCenterX();
+        var pivotY = stitchPath.getBoundsInLocal().getMaxY();
+        if (currentIncreaseCounter > 0) {
+
+          if (totalIncreaseCounter == 2 && currentIncreaseCounter == 2) {
+            rotation = 20;
+          } else if (totalIncreaseCounter == 2 && currentIncreaseCounter == 1) {
+            rotation = 340;
+          }
+          currentIncreaseCounter--;
+
+          Rotate rotate = new Rotate(rotation, pivotX,
+              pivotY);
+          stitchPath.getTransforms().add(rotate);
+
+          graphicalView.patternPane.getChildren().add(stitchPath);
+
+          stitchPath.setPickOnBounds(true);
+
+          SerializableBounds serialBounds = new SerializableBounds(
+              stitchPath.getBoundsInParent().getMinX(), stitchPath.getBoundsInParent().getMinY(),
+              stitchPath.getBoundsInParent().getWidth(), stitchPath.getBoundsInParent().getHeight(),
+              rotation, pivotX, pivotY);
+          StitchBounds stitchBounds = new StitchBounds(stitch, serialBounds);
+          rowBounds.addStitchBounds(stitchBounds);
+
+          stitchPath.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> {
+            stitchClickedHandler(e, stitchPath, stitchBounds, rowBounds);
+          });
+
+          if (currentIncreaseCounter == 0) {
+            totalIncreaseCounter = 0;
+            rotation = 0;
+          }
+
+        } else {
+          graphicalView.patternPane.getChildren().add(stitchPath);
+
+          stitchPath.setPickOnBounds(true);
+
+          SerializableBounds serialBounds = new SerializableBounds(
+              stitchPath.getBoundsInParent().getMinX(), stitchPath.getBoundsInParent().getMinY(),
+              stitchPath.getBoundsInParent().getWidth(), stitchPath.getBoundsInParent().getHeight(),
+              rotation, pivotX, pivotY);
+          StitchBounds stitchBounds = new StitchBounds(stitch, serialBounds);
+          rowBounds.addStitchBounds(stitchBounds);
+
+          stitchPath.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> {
+            stitchClickedHandler(e, stitchPath, stitchBounds, rowBounds);
+          });
+        }
+
 
       }
-
-      graphicalView.patternPane.getChildren().add(stitchPath);
-
-      stitchPath.setPickOnBounds(true);
-
-      SerializableBounds serialBounds = new SerializableBounds(
-          stitchPath.getBoundsInParent().getMinX(), stitchPath.getBoundsInParent().getMinY(),
-          stitchPath.getBoundsInParent().getWidth(), stitchPath.getBoundsInParent().getHeight());
-      StitchBounds stitchBounds = new StitchBounds(stitch, serialBounds);
-      rowBounds.addStitchBounds(stitchBounds);
-
-      stitchPath.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> {
-        stitchClickedHandler(e, stitchPath, stitchBounds, rowBounds);
-      });
-
     }
     return rowBounds;
   }
@@ -399,7 +471,9 @@ public class PatternCanvas extends Pane {
 
     Stitch stitch = stitchBounds.getStitch();
     RowBounds rowBounds = pattern.getRowBounds(stitch.getLoc().getRowNum());
-
+    int rotation = stitchBounds.getBounds().getRotation();
+    var pivotX = stitchPath.getBoundsInLocal().getCenterX();
+    var pivotY = stitchPath.getBoundsInLocal().getMaxY();
     stitch.getParentStitches().clear();
     stitch.getParentStitches().add(newParentLoc);
     rowBounds.removeStitchBounds(stitchBounds);
@@ -407,7 +481,7 @@ public class PatternCanvas extends Pane {
         stitchPath.getBoundsInParent().getMinX(),
         stitchPath.getBoundsInParent().getMinY(),
         stitchPath.getBoundsInParent().getWidth(),
-        stitchPath.getBoundsInParent().getHeight()));
+        stitchPath.getBoundsInParent().getHeight(), rotation, pivotX, pivotY));
     rowBounds.addStitchBounds(newStitchBounds);
     System.out.println(newStitchBounds);
 
@@ -435,6 +509,7 @@ public class PatternCanvas extends Pane {
 
     var x = stitchBounds.getBounds().getCenterX();
     var y = stitchBounds.getBounds().getMaxY();
+    int rotation = stitchBounds.getBounds().getRotation();
 
     var newScaleVal = sqrt(pow(e.getX() - stitchBounds.getBounds().getMaxX(), 2) + pow(
         e.getY() - stitchBounds.getBounds().getMaxY(), 2)) / 300;
@@ -474,6 +549,9 @@ public class PatternCanvas extends Pane {
       StitchBounds stitchBounds,
       SVGPath stitchPath, ImageView resizeHandle, ImageView moveHandle) {
 
+    int rotation = stitchBounds.getBounds().getRotation();
+    var pivotX = stitchPath.getBoundsInLocal().getCenterX();
+    var pivotY = stitchPath.getBoundsInLocal().getMaxY();
     RowBounds rowBounds = pattern.getRowBounds(stitchBounds.getStitch().getLoc().getRowNum());
     pattern.removeRowBounds(rowBounds);
     rowBounds.removeStitchBounds(stitchBounds);
@@ -482,7 +560,7 @@ public class PatternCanvas extends Pane {
             stitchPath.getBoundsInParent().getMinX(),
             stitchPath.getBoundsInParent().getMinY(),
             stitchPath.getBoundsInParent().getWidth(),
-            stitchPath.getBoundsInParent().getHeight()));
+            stitchPath.getBoundsInParent().getHeight(), rotation, pivotX, pivotY));
     rowBounds.addStitchBounds(newStitchBounds);
     pattern.addRowBounds(rowBounds);
 
@@ -533,12 +611,15 @@ public class PatternCanvas extends Pane {
     ArrayList<StitchLoc> parentStitches = getParentStitchLocs(prevStitch,
         stitch, prevStitchLoc);
     stitch.setParentStitches(parentStitches);
+    int rotation = 0;
+    var pivotX = stitchPath.getBoundsInLocal().getCenterX();
+    var pivotY = stitchPath.getBoundsInLocal().getMaxY();
 
     StitchBounds stitchBounds = new StitchBounds(stitch, new SerializableBounds(
         stitchPath.getBoundsInParent().getMinX(),
         stitchPath.getBoundsInParent().getMinY(),
         stitchPath.getBoundsInParent().getWidth(),
-        stitchPath.getBoundsInParent().getHeight()));
+        stitchPath.getBoundsInParent().getHeight(), rotation, pivotX, pivotY));
     RowBounds rowBounds = pattern.getRowBounds(currentRow.getRowNum());
     rowBounds.addStitchBounds(stitchBounds);
 

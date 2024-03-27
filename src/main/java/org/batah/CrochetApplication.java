@@ -33,8 +33,8 @@ public class CrochetApplication extends Application {
 //      e.printStackTrace();
 //    }
     //openTextView();
-    openGraphicalView();
-    //openStartView();
+    //openGraphicalView();
+    openStartView();
   }
 
   public static void main(String[] args) {
@@ -90,33 +90,35 @@ public class CrochetApplication extends Application {
         new CommonTokenStream(lexer2));
     ParseTree tree2 = parser2.instructions(); // begin parsing at instruction rule
 
-    CharStream input3 = CharStreams.fromString("tr, ch 3, tr, dc");
+    CharStream input3 = CharStreams.fromString(
+        "2 tr, skip 2, 2 tr in next tr, skip 2, 2 tr in next tr");
     CrochetPatternParserLexer lexer3 = new CrochetPatternParserLexer(input3);
     CrochetPatternParserParser parser3 = new CrochetPatternParserParser(
         new CommonTokenStream(lexer3));
     ParseTree tree3 = parser3.instructions(); // begin parsing at instruction rule
-//
-//    CharStream input4 = CharStreams.fromString("50 tr");
-//    CrochetPatternParserLexer lexer4 = new CrochetPatternParserLexer(input4);
-//    CrochetPatternParserParser parser4 = new CrochetPatternParserParser(
-//        new CommonTokenStream(lexer4));
-//    ParseTree tree4 = parser4.instructions(); // begin parsing at instruction rule
+
+    CharStream input4 = CharStreams.fromString("6 tr");
+    CrochetPatternParserLexer lexer4 = new CrochetPatternParserLexer(input4);
+    CrochetPatternParserParser parser4 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer4));
+    ParseTree tree4 = parser4.instructions(); // begin parsing at instruction rule
 
 //    CharStream input5 = CharStreams.fromString("*tr, sl, tr, dc, dc* repeat 9 times");
 //    CrochetPatternParserLexer lexer5 = new CrochetPatternParserLexer(input5);
 //    CrochetPatternParserParser parser5 = new CrochetPatternParserParser(
 //        new CommonTokenStream(lexer5));
 //    ParseTree tree5 = parser5.instructions(); // begin parsing at instruction rule
-
-    CrochetVisitor<String> eval = new CrochetVisitor<String>(pattern);
-    eval.visit(tree);
-    eval.visit(tree2);
-    eval.visit(tree3);
-    //eval.visit(tree4);
-    //eval.visit(tree5);
+//
+//    CrochetVisitor<String> eval = new CrochetVisitor<String>(pattern);
+//    eval.visit(tree);
+//    eval.visit(tree2);
+//    eval.visit(tree3);
+//    eval.visit(tree4);
+//    eval.visit(tree5);
 
     Platform.runLater(() -> {
       PatternCanvas patternCanvas = new PatternCanvas(pattern, graphicalView);
+      graphicalView.setPatternCanvas(patternCanvas);
       var patternPaneWidth = graphicalView.getPatternPaneWidth();
       var patternPaneHeight = graphicalView.getPatternPaneHeight();
       if (pattern != null) {

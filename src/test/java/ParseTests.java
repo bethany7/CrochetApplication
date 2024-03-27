@@ -527,4 +527,44 @@ class ParseTests {
     visitor.visit(tree2);
   }
 
+  @Test
+  void sameChainSpace() {
+    CharStream input = CharStreams.fromString("4 tr, ch 4, skip 2, 4 tr");
+    CrochetPatternParserLexer lexer = new CrochetPatternParserLexer(input);
+    CrochetPatternParserParser parser = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer));
+    ParseTree tree = parser.instructions();
+    visitor.visit(tree);
+    CharStream input2 = CharStreams.fromString(
+        "2 tr in next 2 tr, 2 dc, 2 dc in ch 4 sp, ch 2, 2 dc in same ch sp, 4 tr");
+    CrochetPatternParserLexer lexer2 = new CrochetPatternParserLexer(input2);
+    CrochetPatternParserParser parser2 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer2));
+    ParseTree tree2 = parser2.instructions();
+    visitor.visit(tree2);
+    CharStream input3 = CharStreams.fromString("6 dc, tr in ch 2 sp, 8 dc");
+    CrochetPatternParserLexer lexer3 = new CrochetPatternParserLexer(input3);
+    CrochetPatternParserParser parser3 = new CrochetPatternParserParser(
+        new CommonTokenStream(lexer3));
+    ParseTree tree3 = parser3.instructions();
+    visitor.visit(tree3);
+    assertEquals(4, pattern.getRowCount());
+    assertEquals(12, pattern.getRow(2).getStitchCount());
+    assertEquals(16, pattern.getRow(3).getStitchCount());
+    assertEquals(15, pattern.getRow(4).getStitchCount());
+    assertEquals(9, pattern.getRow(3).getStitch(5).getParentStitch(0).getStitchNum());
+    assertEquals(6, pattern.getRow(3).getStitch(6).getParentStitch(0).getStitchNum());
+    assertEquals(6, pattern.getRow(3).getStitch(7).getParentStitch(0).getStitchNum());
+    assertEquals(0, pattern.getRow(3).getStitch(8).getParentStitch(0).getStitchNum());
+    assertEquals(0, pattern.getRow(3).getStitch(9).getParentStitch(0).getStitchNum());
+    assertEquals(6, pattern.getRow(3).getStitch(10).getParentStitch(0).getStitchNum());
+    assertEquals(6, pattern.getRow(3).getStitch(11).getParentStitch(0).getStitchNum());
+    assertEquals(4, pattern.getRow(3).getStitch(12).getParentStitch(0).getStitchNum());
+    assertEquals(11, pattern.getRow(4).getStitch(5).getParentStitch(0).getStitchNum());
+    assertEquals(9, pattern.getRow(4).getStitch(6).getParentStitch(0).getStitchNum());
+    assertEquals(8, pattern.getRow(4).getStitch(7).getParentStitch(0).getStitchNum());
+
+  }
+
+
 }

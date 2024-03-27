@@ -53,23 +53,29 @@ inChainSpace : 'in chain' INT 'space'
              | 'in' INT 'ch space'
              | 'in ch' INT 'sp'
              | 'in ch' INT 'space'
-             | 'in' INT 'chain sp' ;
+             | 'in' INT 'chain sp'
+             | 'in chain' INT 'space'
+             ;
 
 chain : CHAINSTITCH (INT)*
       | CHAINSTITCH INT 'up'
       ;
 
 decrease : (INT)* STITCHTYPE INT 'tog';
-increase : INT STITCHTYPE 'in same' stitch    # SingleIncrease
-         | INT STITCHTYPE 'in next' stitches  # NIncreases
-         | INT STITCHTYPE 'in each' stitch    # AllIncreases
+increase : stitches 'in same chain' (INT)* 'space'  # SingleIncreaseChainSpace
+         | stitches 'in same ch' (INT)* 'sp'  # SingleIncreaseChainSpace
+         | stitches 'in same chain' (INT)* 'sp'  # SingleIncreaseChainSpace
+         | stitches 'in same ch' (INT)* 'space'  # SingleIncreaseChainSpace
+         | stitches 'in same' stitch    # SingleIncrease
+         | stitches 'in next' stitches  # NIncreases
+         | stitches 'in each' stitch    # AllIncreases
          ;
 
 
 stitches : ((INT)* stitch)+ ;
 stitch : GENERICSTITCH    # GenericStitch
         | STITCHTYPE      # StitchType
-        | CHAINSTITCH     # ChainStitch
+        //| CHAINSTITCH     # ChainStitch
         | SLIPSTITCH      # SlipStitch
         ;
 
